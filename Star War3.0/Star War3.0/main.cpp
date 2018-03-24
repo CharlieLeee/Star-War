@@ -6,9 +6,8 @@ int main()
 	// Generate random seed
 	srand(time(NULL));
 	// Init window
-	RenderWindow window(VideoMode(1920, 1080), "Space Shooter", Style::Fullscreen);
+	RenderWindow window(VideoMode(1920, 1080), "Star War v3.0", Style::Fullscreen);
 
-	//window.setFramerateLimit(60);
 
 	// Init textures
 	Texture playerTex;

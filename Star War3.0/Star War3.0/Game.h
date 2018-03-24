@@ -199,5 +199,9 @@ private:
 
 	// Textbox
 	Textbox textbox;
+
+	// Character texutres
+	Texture father;
+
 };
 

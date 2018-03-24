@@ -1,35 +1,18 @@
-﻿  Animation.cpp
-Animation.cpp(23): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-Animation.cpp(24): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-  Background.cpp
-  Bomber.cpp
-Bomber.cpp(7): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
-Bomber.cpp(12): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-Bomber.cpp(15): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
-Bomber.cpp(19): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
-  Boss.cpp
+﻿  Boss.cpp
 Boss.cpp(8): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
 Boss.cpp(12): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
-Boss.cpp(37): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-  Buff.cpp
-Buff.cpp(15): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
-  Bullet.cpp
-Bullet.cpp(32): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-  eBullets.cpp
-eBullets.cpp(25): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-  Enemy.cpp
-Enemy.cpp(21): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-Enemy.cpp(23): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-Enemy.cpp(23): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
+Boss.cpp(41): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
   Game.cpp
-  main.cpp
-main.cpp(7): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
   Player.cpp
   Textbox.cpp
 Textbox.cpp(34): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
 Textbox.cpp(42): warning C4018: '<': signed/unsigned mismatch
+  main.cpp
+main.cpp(7): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
   Generating code
-  All 863 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  68 of 864 functions ( 7.9%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    30 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
-  Star War3.0.vcxproj -> D:\05Development\SFML Repo\Star War3.0\Release\Star War3.0.exe
-  Star War3.0.vcxproj -> D:\05Development\SFML Repo\Star War3.0\Release\Star War3.0.pdb (Full PDB)
+  Star War3.0.vcxproj -> D:\05Development\SFML Repo\Star-War\Star War3.0\Release\Star War3.0.exe
+  Star War3.0.vcxproj -> D:\05Development\SFML Repo\Star-War\Star War3.0\Release\Star War3.0.pdb (Full PDB)

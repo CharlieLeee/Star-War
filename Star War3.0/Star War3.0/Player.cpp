@@ -190,6 +190,5 @@ void Player::Update(RenderTarget &window, float dt)
 
 	this->hpBar.setSize(Vector2f(20.f * this->HP, 5.f));
 	this->hpBar.setPosition(this->shape.getPosition().x, this->shape.getPosition().y - hpBar.getGlobalBounds().height - 10);
-	//this->hpText.setString("HP: " + std::to_string(this->HP) + "/" + std::to_string(this->HPMax));
 }
 

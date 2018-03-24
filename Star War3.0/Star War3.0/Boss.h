@@ -9,6 +9,7 @@ public:
 	~Boss();
 
 	void Movement(RenderWindow *window, const float &dt);
+	void Update(RenderWindow *window, const float &dt);
 	void Draw(RenderWindow *window);
 
 public:
@@ -27,6 +28,7 @@ public:
 	float mult;
 	bool enterScene;
 	float speed;
+	RectangleShape bossHP;
 
 	inline bool IsInScene(RenderWindow *window)
 	{

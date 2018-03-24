@@ -2,7 +2,7 @@
 
 
 
-Boss::Boss(float speed,  Texture *texture, int HP, Vector2u windowsize)
+Boss::Boss(float speed, Texture *texture, int HP, Vector2u windowsize)
 {
 	this->texture = texture;
 	this->size = Vector2f(texture->getSize().x / 2, texture->getSize().y / 2);
@@ -14,13 +14,17 @@ Boss::Boss(float speed,  Texture *texture, int HP, Vector2u windowsize)
 	this->shape.setPosition(InitPos);
 	this->shape.setScale(0.5f, 0.5f);
 	this->HP = HP;
-	
+
 	this->moveTimer = 0.f;
 	this->mult = 62.5f;
 	this->enterScene = false;
 	this->speed = -speed;
 	this->shootTimer = 0.f;
 	this->shootTimerMax = 1.5f;
+
+	// Boss hp bar
+	// Init HP Bar
+	this->bossHP.setFillColor(Color::Blue);
 }
 
 
@@ -38,16 +42,24 @@ void Boss::Movement(RenderWindow * window, const float & dt)
 	}
 	else
 	{
-		this->shape.move(speed, 3* sin(this->moveTimer) * dt * mult);
+		this->shape.move(speed, 3 * sin(this->moveTimer) * dt * mult);
 	}
 
-	if (this->shape.getPosition().x < window->getSize().x / 2 )
+	if (this->shape.getPosition().x < window->getSize().x / 2)
 	{
 		this->speed = 0;
 	}
 }
 
-void Boss::Draw(RenderWindow * window)
+void Boss::Update(RenderWindow *window, const float & dt)
+{
+	this->Movement(window, dt);
+	this->bossHP.setSize(Vector2f(5.f, 20.f * this->HP));
+	this->bossHP.setPosition(this->shape.getPosition().x + 240.f, this->shape.getPosition().y - this->shape.getGlobalBounds().height / 2);
+}
+
+void Boss::Draw(RenderWindow *window)
 {
 	window->draw(this->shape);
+	window->draw(this->bossHP);
 }

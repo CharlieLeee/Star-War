@@ -79,7 +79,7 @@ Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture
 
 	// Init ebullet
 	this->ebulletCntMax = 1.1f;
-	this->offset2 = Vector2f(-10.f, 40.f);
+	this->offset2 = Vector2f(-10.f, 45.f);
 
 	// Player
 	this->initPos = Vector2f(0.f, 45.f);
@@ -155,11 +155,13 @@ Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture
 
 	// Init Textbox
 	textbox.Setup(2, 15, 700, sf::Vector2f(500, 0));
-	textbox.Add("Aye Captain! Welcome on board");
 
 	// Init boss
 	this->generateBoss = false;
 	this->bossTex.loadFromFile("Textures/spaceship2.png");
+
+	// Init character textures
+	this->father.loadFromFile("Textures/father.png");
 }
 
 
@@ -288,7 +290,7 @@ void Game::Update(float dt)
 
 			for (size_t i = 0; i < boss.size(); i++)
 			{
-				boss[i].Movement(window, dt);
+				boss[i].Update(window, dt);
 			}
 
 			PlayerBossCollision(player);
@@ -408,7 +410,7 @@ void Game::Update(float dt)
 				isMenu = false;
 				gameIsOver = false;
 				textbox.Clear();
-				textbox.Add("Aye Captain! Welcome on board");
+				textbox.Add("Aye Captain! Welcome on board\nPress K to shoot\nPress WASD to move");
 
 				welcome.play();
 			}
