@@ -30,14 +30,14 @@ public:
 	void BomberUpdate(const float &dt);
 	void BomberPlayerBulCollision();
 
-	void PBulletEnemyCollision();
-	void PlayerEnemyCollision();
+	void PBulletEnemyCollision(Player &player);
+	void PlayerEnemyCollision(Player &player);
 	void PlayerBossCollision(Player &player);
 	void PlayerBulletBossCollision(Player &player);
 
 	void ExplosionUpdate(float speed, const float &dt);
 
-	void ClearPlayerBullets();
+	void ClearPlayerBullets(Player &player);
 	void ClearEnemy();
 	void ClearBomber();
 	void ClearEBullets(); 
@@ -51,7 +51,7 @@ public:
 	void BulletBuffUpdate(const float &dt);
 	void ResetEnemy();
 	void EnemyUpdate(const float &dt);
-	void PlayerUpdate(const float &dt);
+	void PlayerUpdate(const float &dt, Player &player);
 	void TextboxUpdate();
 
 	void Update(float dt);
@@ -201,7 +201,7 @@ private:
 	Textbox textbox;
 
 	// Character texutres
-	Texture father;
+	Texture son;
 
 };
 

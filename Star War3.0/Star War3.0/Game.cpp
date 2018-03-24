@@ -8,7 +8,6 @@ Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture
 	:player(playerTex, bulletTex, shootLapse),
 	logo(logoText, Vector2u(40, 1), 0.02f, Vector2f(800.f, 800.f), Vector2f(window->getSize().x / 2 - 400.f,
 		window->getSize().y / 2 - 400.f)),
-	//logo(logoText, Vector2u(8, 8), 0.02f),
 	playerA(playerTex, bulletTex, shootLapse),
 	playerB(playerTex, bulletTex, shootLapse),
 	menuBack(backgroundMenu, window),
@@ -154,14 +153,14 @@ Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture
 	this->backgroundSpeed = Vector2f(-3.f, 0.f);
 
 	// Init Textbox
-	textbox.Setup(2, 15, 700, sf::Vector2f(500, 0));
+	textbox.Setup(2, 18, 700, sf::Vector2f(500, 0));
 
 	// Init boss
 	this->generateBoss = false;
 	this->bossTex.loadFromFile("Textures/spaceship2.png");
 
 	// Init character textures
-	this->father.loadFromFile("Textures/father.png");
+	this->son.loadFromFile("Textures/son.png");
 }
 
 
@@ -173,7 +172,6 @@ void Game::Update(float dt)
 	logo.Update(0, dt);
 	logoShape.setTextureRect(logo.uvRect);
 
-	//logo.UpdateAll(dt);
 
 	if (!isMenu)
 	{
@@ -194,7 +192,7 @@ void Game::Update(float dt)
 			// Clear Enemy bullets
 			ClearEBullets();
 			ResetEnemy();
-			ClearPlayerBullets();
+			ClearPlayerBullets(player);
 			ClearExplosion();
 			ClearBoss();
 
@@ -203,7 +201,7 @@ void Game::Update(float dt)
 				welcome.play();
 				background.setVolume(10.f);
 				gameIsOver = false;
-				textbox.Add("Aye Captain! Welcome on board");
+				textbox.Add("Aye Captain! Welcome on board", true, &son);
 
 				player.Reset();
 			}
@@ -244,28 +242,37 @@ void Game::Update(float dt)
 					boss[i].shootTimer += dt;
 			}
 
+			// Update Boss
+			if (player.score % 50 == 0 && player.score != 0 && !generateBoss)
+			{
+				boss.push_back(Boss(6.f, &bossTex, 20, this->window->getSize()));
+				generateBoss = true;
+			}
+
+			// Update Boss
 			for (size_t i = 0; i < boss.size(); i++)
 			{
+				boss[i].Update(window, dt);
 				if (boss[i].shootTimer > boss[i].shootTimerMax)
 				{
 					int control = rand() % 3;
 
 					if (control == 1)
 					{
-			ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 10.f), Vector2f(-1.f, 0.f)));
+						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 10.f), Vector2f(-1.f, 0.f)));
 						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 40.f), Vector2f(-1.f, 0.f)));
 						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 70.f), Vector2f(-1.f, 0.f)));
 						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y - 20.f), Vector2f(-1.f, 0.f)));
 						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y - 50.f), Vector2f(-1.f, 0.f)));
-						ebulletCnt += 5;			
+						ebulletCnt += 5;
 					}
 					else if (control == 2)
 					{
-						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 10.f), Vector2f(-1/2.f, 1.732f/2)));
-						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 10.f), Vector2f(-1.732f/2, 1/2.f)));
+						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 10.f), Vector2f(-1 / 2.f, 1.732f / 2)));
+						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 10.f), Vector2f(-1.732f / 2, 1 / 2.f)));
 						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 10.f), Vector2f(-1.f, 0.f)));
-						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 10.f), Vector2f(-1.732f/2, -1/2.f)));
-						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 10.f), Vector2f(-1/2.f, -1.732f/2)));
+						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 10.f), Vector2f(-1.732f / 2, -1 / 2.f)));
+						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 10.f), Vector2f(-1 / 2.f, -1.732f / 2)));
 
 						ebulletCnt += 5;
 					}
@@ -279,18 +286,6 @@ void Game::Update(float dt)
 					}
 					boss[i].shootTimer -= boss[i].shootTimerMax;
 				}
-			}
-
-			// Update Boss
-			if (player.score % 50 == 0 && player.score != 0 && !generateBoss)
-			{
-				boss.push_back(Boss(6.f, &bossTex, 20, this->window->getSize()));
-				generateBoss = true;
-			}
-
-			for (size_t i = 0; i < boss.size(); i++)
-			{
-				boss[i].Update(window, dt);
 			}
 
 			PlayerBossCollision(player);
@@ -312,7 +307,7 @@ void Game::Update(float dt)
 				enemies[i].bulletTimer += dt;
 			}
 			// Update player
-			PlayerUpdate(dt);
+			PlayerUpdate(dt, player);
 
 			// Spawn enemies when it's time
 			if (spawnCnt > spawnLapse)
@@ -350,9 +345,9 @@ void Game::Update(float dt)
 				ebullets[i].Move(enemy_bul_speed, dt);
 			}
 
-			PBulletEnemyCollision();
+			PBulletEnemyCollision(player);
 
-			PlayerEnemyCollision();
+			PlayerEnemyCollision(player);
 
 			ExplosionUpdate(enemySpeed / 2, dt);
 
@@ -410,7 +405,7 @@ void Game::Update(float dt)
 				isMenu = false;
 				gameIsOver = false;
 				textbox.Clear();
-				textbox.Add("Aye Captain! Welcome on board\nPress K to shoot\nPress WASD to move");
+				textbox.Add("Aye Captain! Welcome on board\nPress K to shoot\nPress WASD to move", true);
 
 				welcome.play();
 			}
@@ -443,28 +438,28 @@ void Game::CounterReset()
 	this->bomberIndex = 0;
 }
 
-// Use counter to calculate starting index(length 20)
+// Use counter to calculate starting index(length 30)
 void Game::CalculateIndex()
 {
-	if (enemyCnt <= 20)
+	if (enemyCnt <= 30)
 		enemyIndex = 0;
 	else
-		enemyIndex = enemyCnt - 20;
+		enemyIndex = enemyCnt - 30;
 
-	if (bulletCnt <= 20)
+	if (bulletCnt <= 30)
 		bulletIndex = 0;
 	else
-		bulletIndex = bulletCnt - 20;
+		bulletIndex = bulletCnt - 30;
 
-	if (ebulletCnt <= 20)
+	if (ebulletCnt <= 30)
 		ebulletIndex = 0;
 	else
-		ebulletIndex = ebulletCnt - 20;
+		ebulletIndex = ebulletCnt - 30;
 
-	if (bomberCnt <= 20)
+	if (bomberCnt <= 30)
 		bomberIndex = 0;
 	else
-		bomberIndex = bomberCnt - 20;
+		bomberIndex = bomberCnt - 30;
 }
 
 void Game::BackgroundUpdate(const float & dt)
@@ -561,7 +556,7 @@ void Game::BomberPlayerBulCollision()
 }
 
 // Check player bullets & enemy collision
-void Game::PBulletEnemyCollision()
+void Game::PBulletEnemyCollision(Player &player)
 {
 	bool bulletErased = false;
 	bool enemyErased = false;
@@ -612,7 +607,7 @@ void Game::PBulletEnemyCollision()
 	}
 }
 
-void Game::PlayerEnemyCollision()
+void Game::PlayerEnemyCollision(Player &player)
 {
 	// Check player & enemies collision
 	for (size_t i = enemyIndex; i < enemies.size(); i++)
@@ -672,6 +667,7 @@ void Game::PlayerBulletBossCollision(Player & player)
 					explosion.push_back(Animation(explosionTex, Vector2u(8, 8), 0.01f, Vector2f(800.f, 800.f), Vector2f(boss[j].shape.getPosition().x - 250.f, boss[j].shape.getPosition().y - 250.f)));
 
 					BuffHP.push_back(Buff(addHP, Vector2f(boss[j].shape.getPosition().x, boss[j].shape.getPosition().y)));
+					BuffBullet.push_back(Buff(addBullet, Vector2f(boss[j].shape.getPosition().x + 20.f, boss[j].shape.getPosition().y + 20.f)));
 
 					//std::cout << "push";
 				}
@@ -703,7 +699,7 @@ void Game::ExplosionUpdate(float speed, const float & dt)
 	}
 }
 
-void Game::ClearPlayerBullets()
+void Game::ClearPlayerBullets(Player &player)
 {
 	for (size_t i = 0; i < player.bullets.size(); i++)
 	{
@@ -852,7 +848,7 @@ void Game::EnemyUpdate(const float & dt)
 	}
 }
 
-void Game::PlayerUpdate(const float & dt)
+void Game::PlayerUpdate(const float & dt, Player &player)
 {
 	// Player Update position
 	player.Update(*window, dt);
@@ -890,19 +886,19 @@ void Game::TextboxUpdate()
 {
 	if (player.score >= 50 && !isFifty)
 	{
-		this->textbox.Add("You've reached 50pt, watch out for the BOSS!!");
+		this->textbox.Add("You've reached 50pt, watch out for the BOSS!!", false);
 		this->isFifty = true;
 	}
 
 	if (havePickedHP)
 	{
-		this->textbox.Add("You've picked one HP Buff: health +1.     Your HP: " + std::to_string(player.HP));
+		this->textbox.Add("You've picked one HP Buff: health +1.     Your HP: " + std::to_string(player.HP), false);
 		this->havePickedHP = false;
 	}
 
 	if (pickedBulletBuff)
 	{
-		this->textbox.Add("You've picked one Bullet Buff: Your shooting mode: strafet");
+		this->textbox.Add("You've picked one Bullet Buff: Your shooting mode: strafet", false);
 		this->pickedBulletBuff = false;
 	}
 }

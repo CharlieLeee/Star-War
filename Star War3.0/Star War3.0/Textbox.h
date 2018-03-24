@@ -6,21 +6,23 @@ class Textbox {
 public:
 	Textbox();
 	Textbox(int l_visible, int l_charSize,
-		int l_width, sf::Vector2f l_screenPos);
+		int l_width, Vector2f l_screenPos);
 	~Textbox();
 
 	void Setup(int l_visible, int l_charSize,
-		int l_width, sf::Vector2f l_screenPos);
-	void Add(std::string l_message);
+		int l_width, Vector2f l_screenPos);
+	void Add(std::string l_message, bool isPic, Texture *text = nullptr);
 	void Clear();
 
-	void Render(sf::RenderWindow& l_wind);
+	void Render(RenderWindow& l_wind);
 private:
 	MessageContainer m_messages;
 	int m_numVisible;
+	bool isPic;
+	Texture character;
 
-	sf::RectangleShape m_backdrop;
-	sf::Font m_font;
-	sf::Text m_content;
-	//RectangleShape photo;
+	RectangleShape m_backdrop;
+	Font m_font;
+	Text m_content;
+	RectangleShape photo;
 };
