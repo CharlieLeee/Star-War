@@ -42,14 +42,14 @@ void Textbox::Setup(int l_visible, int l_charSize,
 		l_screenPos.y)
 	);
 	photo.setTexture(&this->character);
-	std::cout << "1";
+	//std::cout << "1";
 	m_backdrop.setFillColor(sf::Color(90, 90, 90, 90));
 	m_backdrop.setPosition(l_screenPos);
 }
 void Textbox::Add(std::string l_message, bool isPic, Texture *text)
 {
 	bool erase = true;
-	std::cout << "add";
+	//std::cout << "add";
 	this->isPic = isPic;
 	
 	m_messages.push_back(l_message);
@@ -60,7 +60,7 @@ void Textbox::Add(std::string l_message, bool isPic, Texture *text)
 	if (text != nullptr)
 		this->character = *text;
 	this->photo.setTexture(&this->character);
-	std::cout << "2";
+	//std::cout << "2";
 }
 
 void Textbox::Clear() { m_messages.clear(); }
