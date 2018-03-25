@@ -5,11 +5,11 @@
 Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture *enemyText,
 	Texture *logoText, float shootLapse, Texture *backgroundMenu, Texture *explosionTex,
 	Texture *movingBack, Texture *bomberTex, Texture *addBullet, Texture *addHP, Texture *bossTex)
-	:player(window, playerTex, bulletTex, shootLapse, true),
+	:player(playerTex, bulletTex, shootLapse),
 	logo(logoText, Vector2u(40, 1), 0.02f, Vector2f(800.f, 800.f), Vector2f(window->getSize().x / 2 - 400.f,
 		window->getSize().y / 2 - 400.f)),
-	playerA(window,playerTex, bulletTex, shootLapse, true),
-	playerB(window, playerTex, bulletTex, shootLapse, false),
+	playerA(playerTex, bulletTex, shootLapse),
+	playerB(playerTex, bulletTex, shootLapse),
 	menuBack(backgroundMenu, window),
 	moving(movingBack, window)
 {

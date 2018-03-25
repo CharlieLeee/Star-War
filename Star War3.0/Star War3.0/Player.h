@@ -4,7 +4,7 @@
 class Player
 {
 public:
-	Player(RenderWindow *window, Texture *texture, Texture *bulletTex, float _shootTimer, bool isLeft);
+	Player(Texture *texture, Texture *bulletTex, float _shootTimer);
 	~Player();
 
 	// Player Sprite
@@ -50,9 +50,6 @@ public:
 
 	// Player bullet vector
 	std::vector<Bullet> bullets;
-
-	// 2 Player mode
-	bool isLeft;
 
 public:
 	// Helper function

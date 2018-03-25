@@ -1,6 +1,8 @@
 #include "Player.h"
 
-Player::Player(RenderWindow	*window, Texture *texture, Texture *bulletTex, float _shootTimer, bool isLeft)
+
+
+Player::Player(Texture *texture, Texture *bulletTex, float _shootTimer)
 {
 	{
 		// Init HP
@@ -9,9 +11,6 @@ Player::Player(RenderWindow	*window, Texture *texture, Texture *bulletTex, float
 
 		// Init HP Bar
 		this->hpBar.setFillColor(Color::Magenta);
-
-		// Check player number
-		this->isLeft = isLeft;
 
 		// Init score
 		this->score = 0;
@@ -30,22 +29,15 @@ Player::Player(RenderWindow	*window, Texture *texture, Texture *bulletTex, float
 		// Set sprite properties
 		this->texture = texture;
 		this->shape.setTexture(*texture);
-
-		// Set initial position
-		this->InitPos = Vector2f(0.f, 45.f);
-
-		if (isLeft)
-			this->shape.setPosition(this->InitPos);
-		else
-			this->shape.setPosition(window->getSize().x, 0.f);
+		this->shape.setPosition(this->InitPos);
 
 		// Init bullet texture
 		this->bulletTex = bulletTex;
 
-		if (isLeft)
-			this->shape.setScale(0.15f, 0.15f);
-		else
-			this->shape.setScale(-0.15f, 0.15f);
+		this->shape.setScale(0.15f, 0.15f);
+
+		// Set initial position
+		this->InitPos = Vector2f(0.f, 45.f);
 
 		// Set multiplier
 		this->mult = 62.5f;
