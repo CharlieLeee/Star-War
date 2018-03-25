@@ -59,7 +59,7 @@ Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture
 
 	// Init enemy texture
 	this->enemyTex = *enemyText;
-	this->ebulletTex.loadFromFile("Textures/missileTex02.png");
+	this->ebulletTex.loadFromFile("Textures/Ebeam.png");
 
 	// Init enemy
 	this->enemySpeed = 10.f;

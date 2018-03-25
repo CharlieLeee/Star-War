@@ -1,7 +1,4 @@
-﻿  Textbox.cpp
-d:\05development\sfml repo\star-war\star war3.0\star war3.0\textbox.cpp(37): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-d:\05development\sfml repo\star-war\star war3.0\star war3.0\textbox.cpp(56): warning C4018: '<': signed/unsigned mismatch
-  Game.cpp
-  Generating Code...
+﻿  main.cpp
+d:\05development\sfml repo\star-war\star war3.0\star war3.0\main.cpp(7): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
   Star War3.0.vcxproj -> D:\05Development\SFML Repo\Star-War\Star War3.0\Debug\Star War3.0.exe
   Star War3.0.vcxproj -> D:\05Development\SFML Repo\Star-War\Star War3.0\Debug\Star War3.0.pdb (Full PDB)

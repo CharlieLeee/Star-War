@@ -6,7 +6,7 @@ eBullets::eBullets(Texture *texture, Vector2f pos, Vector2f direction)
 {
 	this->shape.setTexture(*texture);
 
-	this->shape.setScale(0.07f, 0.07f);
+	this->shape.setScale(0.05f, 0.04f);
 	this->shape.setPosition(pos);
 	this->direction = direction;
 	this->mult = 62.5f;
