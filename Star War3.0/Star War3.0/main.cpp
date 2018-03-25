@@ -28,7 +28,7 @@ int main()
 	Texture movingBack;
 	movingBack.loadFromFile("Textures/back2.png");
 	
-	float shootLapse = 0.4f;
+	float shootLapse = 0.35f;
 
 	Texture bomber;
 	bomber.loadFromFile("Textures/enemy3.png");

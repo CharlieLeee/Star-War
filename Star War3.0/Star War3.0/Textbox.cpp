@@ -4,11 +4,11 @@
 
 Textbox::Textbox()
 {
-	Setup(2, 14, 200, sf::Vector2f(0, 0));
+	Setup(1, 14, 200, Vector2f(0, 0));
 }
 
 Textbox::Textbox(int l_visible, int l_charSize,
-	int l_width, sf::Vector2f l_screenPos)
+	int l_width, Vector2f l_screenPos)
 {
 	Setup(l_visible, l_charSize, l_width, l_screenPos);
 }
@@ -19,10 +19,10 @@ Textbox::~Textbox()
 }
 
 void Textbox::Setup(int l_visible, int l_charSize,
-	int l_width, sf::Vector2f l_screenPos)
+	int l_width, Vector2f l_screenPos)
 {
 	m_numVisible = l_visible;
-	sf::Vector2f l_offset(2.0f, 2.0f);
+	Vector2f l_offset(2.0f, 2.0f);
 	m_font.loadFromFile("Fonts/SF Atarian System Extended.ttf");
 	this->character.loadFromFile("Textures/son.png");
 
@@ -30,10 +30,10 @@ void Textbox::Setup(int l_visible, int l_charSize,
 	m_content.setFont(m_font);
 	m_content.setString("");
 	m_content.setCharacterSize(l_charSize);
-	m_content.setFillColor(sf::Color::White);
+	m_content.setFillColor(Color::White);
 	m_content.setPosition(l_screenPos + l_offset);
 
-	m_backdrop.setSize(sf::Vector2f(
+	m_backdrop.setSize(Vector2f(
 		l_width, (l_charSize * 5.f)) // 1.2f indicates space between lines
 	);
 
@@ -43,7 +43,7 @@ void Textbox::Setup(int l_visible, int l_charSize,
 	);
 	photo.setTexture(&this->character);
 	//std::cout << "1";
-	m_backdrop.setFillColor(sf::Color(90, 90, 90, 90));
+	m_backdrop.setFillColor(Color(90, 90, 90, 90));
 	m_backdrop.setPosition(l_screenPos);
 }
 void Textbox::Add(std::string l_message, bool isPic, Texture *text)

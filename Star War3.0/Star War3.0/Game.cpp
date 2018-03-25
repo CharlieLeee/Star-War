@@ -35,7 +35,7 @@ Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture
 
 	// Init window
 	this->window = window;
-	this->window->setFramerateLimit(60);
+	//this->window->setFramerateLimit(60);
 
 	// Init fonts
 	this->font.loadFromFile("Fonts/Dosis-Light.ttf");
@@ -153,7 +153,7 @@ Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture
 	this->backgroundSpeed = Vector2f(-3.f, 0.f);
 
 	// Init Textbox
-	textbox.Setup(2, 18, 700, sf::Vector2f(500, 0));
+	textbox.Setup(1, 18, 700, sf::Vector2f(500, 0));
 
 	// Init boss
 	this->generateBoss = false;
@@ -161,6 +161,8 @@ Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture
 
 	// Init character textures
 	this->son.loadFromFile("Textures/son.png");
+	this->robot.loadFromFile("Textures/Robot.png");
+	this->colonel.loadFromFile("Textures/colonel.png");
 }
 
 
@@ -207,184 +209,37 @@ void Game::Update(float dt)
 			}
 
 		}
-		else
+		else // Game starts here
 		{
-			// Game start here
+			// Calculate Index
+			CalculateIndex();
 
 			// Update background
 			BackgroundUpdate(dt);
+			
 			// Update timer
-			if (player.shootCnt < this->shootLapse)
-				player.shootCnt += dt;
-
-			if (this->spawnCnt < this->spawnLapse)
-				spawnCnt += dt;
-
-			if (this->bomberTimer < this->bomberLapse)
-				bomberTimer += dt;
-
-			// Update Buff timer
-			if (havePickedBullet)
-			{
-				bulletBuffTimer += dt;
-			}
-
-			if (bulletBuffTimer > bulletBuffMax)
-			{
-				bulletBuffTimer = 0.f;
-				havePickedBullet = false;
-			}
-
-			// Update boss timer
-			for (size_t i = 0; i < boss.size(); i++)
-			{
-				if (boss[i].IsInScene(this->window))
-					boss[i].shootTimer += dt;
-			}
+			PlayerTimerUpdate(dt, player);
 
 			// Update Boss
-			if (player.score % 50 == 0 && player.score != 0 && !generateBoss)
-			{
-				boss.push_back(Boss(6.f, &bossTex, 20, this->window->getSize()));
-				generateBoss = true;
-			}
-
-			// Update Boss
-			for (size_t i = 0; i < boss.size(); i++)
-			{
-				boss[i].Update(window, dt);
-				if (boss[i].shootTimer > boss[i].shootTimerMax)
-				{
-					int control = rand() % 3;
-
-					if (control == 1)
-					{
-						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 10.f), Vector2f(-1.f, 0.f)));
-						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 40.f), Vector2f(-1.f, 0.f)));
-						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 70.f), Vector2f(-1.f, 0.f)));
-						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y - 20.f), Vector2f(-1.f, 0.f)));
-						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y - 50.f), Vector2f(-1.f, 0.f)));
-						ebulletCnt += 5;
-					}
-					else if (control == 2)
-					{
-						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 10.f), Vector2f(-1 / 2.f, 1.732f / 2)));
-						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 10.f), Vector2f(-1.732f / 2, 1 / 2.f)));
-						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 10.f), Vector2f(-1.f, 0.f)));
-						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 10.f), Vector2f(-1.732f / 2, -1 / 2.f)));
-						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 10.f), Vector2f(-1 / 2.f, -1.732f / 2)));
-
-						ebulletCnt += 5;
-					}
-					else if (control == 0)
-					{
-						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 40.f), Vector2f(-1.f, 0.f)));
-						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 50.f), Vector2f(-1.f, 0.f)));
-						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y - 40.f), Vector2f(-1.f, 0.f)));
-						ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y - 50.f), Vector2f(-1.f, 0.f)));
-						ebulletCnt += 4;
-					}
-					boss[i].shootTimer -= boss[i].shootTimerMax;
-				}
-			}
-
-			PlayerBossCollision(player);
-
-			PlayerBulletBossCollision(player);
+			BossUpdate(dt, player);
 
 			// Update Textbox
 			TextboxUpdate();
 
-			// HP Buff Update
-			HPBuffUpdate(dt);
+			// Update Buffs
+			BuffUpdate(dt, player);
 
-			// Bullet Buff Update
-			BulletBuffUpdate(dt);
-
-			// Update enemies' timers
-			for (size_t i = enemyIndex; i < enemies.size(); i++)
-			{
-				enemies[i].bulletTimer += dt;
-			}
 			// Update player
 			PlayerUpdate(dt, player);
-
-			// Spawn enemies when it's time
-			if (spawnCnt > spawnLapse)
-			{
-				enemies.push_back(Enemy(&enemyTex, window->getSize(), enemySpeed));
-				spawnCnt -= spawnLapse;
-				enemyCnt++;
-			}
-
-			// Handle animations
-			CLearOutBoundExplosion();
-
-			// Calculate Index
-			CalculateIndex();
-
+						
 			// Update enemies movement & hp
 			EnemyUpdate(dt);
-
-			GenerateEnemyBullet();
-
-			// Generate bomber
-			if (bomberTimer > bomberLapse)
-			{
-				bomber.push_back(Bomber(bomberTex, this->window->getSize()));
-				bomberTimer -= bomberLapse;
-				this->bomberCnt++;
-			}
-
+			
 			// Bomber update
-			BomberUpdate(dt);
+			BomberUpdate(dt, player);
 
-			// Ebullets move
-			for (size_t i = ebulletIndex; i < ebullets.size(); i++)
-			{
-				ebullets[i].Move(enemy_bul_speed, dt);
-			}
-
-			PBulletEnemyCollision(player);
-
-			PlayerEnemyCollision(player);
-
+			// Explosion Update
 			ExplosionUpdate(enemySpeed / 2, dt);
-
-			// Check ebullets & player collison
-			for (size_t i = ebulletIndex; i < ebullets.size(); i++)
-			{
-				// Player collison
-
-				if (ebullets[i].shape.getGlobalBounds().intersects(player.shape.getGlobalBounds()))
-				{
-					player.HP--;
-					eshotSound.play();
-
-					ebullets.erase(ebullets.begin() + i);
-					this->ebulletCnt--;
-					break;
-				}
-			}
-
-			// Update score
-			score.setString("SCORE: " + std::to_string(player.score));
-
-			// Update player state
-			if (player.HP == 0)
-			{
-				player.hpBar.setSize(Vector2f(20.f * player.HP, 5.f));
-
-				this->endScoreText.setPosition(Vector2f(window->getSize().x / 2 - 200.f,
-					window->getSize().y / 2.f - endScoreText.getGlobalBounds().height / 2));
-
-				this->endScoreText.setString("    GAME OVER!\n      SCORE: " + std::to_string(player.score) +
-					"\nPress space to restart or ESC to exit");
-
-				ClearEnemy();
-				gameIsOver = true;
-			}
-
 		}
 	}
 
@@ -422,6 +277,137 @@ void Game::Update(float dt)
 		}
 
 	}
+}
+
+void Game::PlayerTimerUpdate(const float & dt, Player &player)
+{
+	if (player.shootCnt < this->shootLapse)
+		player.shootCnt += dt;
+}
+
+void Game::EnemyTimerUpdate(const float & dt)
+{
+	// Update enemy spawn lapse
+	if (this->spawnCnt < this->spawnLapse)
+		spawnCnt += dt;
+
+	// Spawn enemies when it's time
+	if (spawnCnt > spawnLapse)
+	{
+		enemies.push_back(Enemy(&enemyTex, window->getSize(), enemySpeed));
+		spawnCnt -= spawnLapse;
+		enemyCnt++;
+	}
+	
+	// Update enemies' timers
+	for (size_t i = enemyIndex; i < enemies.size(); i++)
+	{
+		enemies[i].bulletTimer += dt;
+	}
+}
+
+void Game::BomberTimerUpdate(const float & dt)
+{
+	if (this->bomberTimer < this->bomberLapse)
+		bomberTimer += dt;
+
+	// Generate bomber
+	if (bomberTimer > bomberLapse)
+	{
+		bomber.push_back(Bomber(bomberTex, this->window->getSize()));
+		bomberTimer -= bomberLapse;
+		this->bomberCnt++;
+	}
+}
+
+void Game::BuffTimerUpdate(const float & dt)
+{
+	// Update Buff timer
+	if (havePickedBullet)
+	{
+		bulletBuffTimer += dt;
+	}
+
+	if (bulletBuffTimer > bulletBuffMax)
+	{
+		bulletBuffTimer = 0.f;
+		havePickedBullet = false;
+	}
+}
+
+void Game::BossTimerUpdate(const float & dt)
+{
+	// Update boss timer
+	for (size_t i = 0; i < boss.size(); i++)
+	{
+		if (boss[i].IsInScene(this->window))
+			boss[i].shootTimer += dt;
+	}
+}
+
+void Game::GenerateBoss()
+{
+	if (player.score % 50 == 0 && player.score != 0 && !generateBoss)
+	{
+		boss.push_back(Boss(6.f, &bossTex, 20, this->window->getSize()));
+		this->generateBoss = true;
+	}
+}
+
+void Game::BossShoot(const float &dt)
+{
+	for (size_t i = 0; i < boss.size(); i++)
+	{
+		boss[i].Update(window, dt);
+		if (boss[i].shootTimer > boss[i].shootTimerMax)
+		{
+			int control = rand() % 3;
+
+			if (control == 1)
+			{
+				ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 10.f), Vector2f(-1.f, 0.f)));
+				ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 40.f), Vector2f(-1.f, 0.f)));
+				ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 70.f), Vector2f(-1.f, 0.f)));
+				ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y - 20.f), Vector2f(-1.f, 0.f)));
+				ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y - 50.f), Vector2f(-1.f, 0.f)));
+				ebulletCnt += 5;
+			}
+			else if (control == 2)
+			{
+				ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 10.f), Vector2f(-1 / 2.f, 1.732f / 2)));
+				ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 10.f), Vector2f(-1.732f / 2, 1 / 2.f)));
+				ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 10.f), Vector2f(-1.f, 0.f)));
+				ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 10.f), Vector2f(-1.732f / 2, -1 / 2.f)));
+				ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 10.f), Vector2f(-1 / 2.f, -1.732f / 2)));
+
+				ebulletCnt += 5;
+			}
+			else if (control == 0)
+			{
+				ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 40.f), Vector2f(-1.f, 0.f)));
+				ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y + 50.f), Vector2f(-1.f, 0.f)));
+				ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y - 40.f), Vector2f(-1.f, 0.f)));
+				ebullets.push_back(eBullets(&ebulletTex, Vector2f(boss[i].shape.getPosition().x, boss[i].shape.getPosition().y - 50.f), Vector2f(-1.f, 0.f)));
+				ebulletCnt += 4;
+			}
+			boss[i].shootTimer -= boss[i].shootTimerMax;
+		}
+	}
+}
+
+void Game::BossUpdate(const float & dt, Player &player)
+{
+	this->BossTimerUpdate(dt);
+
+	// Generate Boss
+	this->GenerateBoss();
+
+	// Update Boss
+	this->BossShoot(dt);
+
+	this->PlayerBossCollision(player);
+
+	this->PlayerBulletBossCollision(player);
 }
 
 // Reset counter
@@ -467,8 +453,11 @@ void Game::BackgroundUpdate(const float & dt)
 	moving.UpdateMovingBack(this->window, dt, Vector2f(backgroundSpeed.x - abs(player.currentV.x) / 4, 0.f));
 }
 
-void Game::GenerateEnemyBullet()
+void Game::GenerateEnemyBullet(const float &dt)
 {
+	// Timer
+	EnemyTimerUpdate(dt);
+	
 	// Enemy bullets generate
 	for (size_t i = enemyIndex; i < enemies.size(); i++)
 	{
@@ -487,8 +476,26 @@ void Game::GenerateEnemyBullet()
 	}
 }
 
-void Game::BomberUpdate(const float &dt)
+void Game::EbulletsMovement(const float & dt)
 {
+	for (size_t i = ebulletIndex; i < ebullets.size(); i++)
+	{
+		ebullets[i].Move(enemy_bul_speed, dt);
+	}
+}
+
+void Game::EbulletsUpdate(const float & dt)
+{
+	this->GenerateEnemyBullet(dt);
+	this->EbulletsMovement(dt);
+}
+
+void Game::BomberUpdate(const float &dt, Player &player)
+{
+	//Update timer
+	BomberTimerUpdate(dt);
+	
+	// Bomber Player collision
 	for (size_t i = bomberIndex; i < bomber.size(); i++)
 	{
 		bomber[i].Move(bomberSpeed, dt, player.shape.getPosition(), this->window);
@@ -507,10 +514,10 @@ void Game::BomberUpdate(const float &dt)
 		}
 	}
 
-	BomberPlayerBulCollision();
+	BomberPlayerBulCollision(player);
 }
 
-void Game::BomberPlayerBulCollision()
+void Game::BomberPlayerBulCollision(Player &player)
 {
 	bool bulletErased = false;
 	bool bomberErased = false;
@@ -555,7 +562,6 @@ void Game::BomberPlayerBulCollision()
 	}
 }
 
-// Check player bullets & enemy collision
 void Game::PBulletEnemyCollision(Player &player)
 {
 	bool bulletErased = false;
@@ -689,6 +695,24 @@ void Game::PlayerBulletBossCollision(Player & player)
 	}
 }
 
+void Game::PlayerEbulletsCollision(Player & player)
+{
+	for (size_t i = ebulletIndex; i < ebullets.size(); i++)
+	{
+		// Player collison
+
+		if (ebullets[i].shape.getGlobalBounds().intersects(player.shape.getGlobalBounds()))
+		{
+			player.HP--;
+			eshotSound.play();
+
+			ebullets.erase(ebullets.begin() + i);
+			this->ebulletCnt--;
+			break;
+		}
+	}
+}
+
 void Game::ExplosionUpdate(float speed, const float & dt)
 {
 	for (size_t i = 0; i < explosion.size(); i++)
@@ -697,6 +721,9 @@ void Game::ExplosionUpdate(float speed, const float & dt)
 		explosion[i].UpdateAll(dt);
 		explosion[i].shape.setTextureRect(explosion[i].uvRect);
 	}
+
+	// Handle animations
+	CLearOutBoundExplosion();
 }
 
 void Game::ClearPlayerBullets(Player &player)
@@ -777,7 +804,7 @@ void Game::ClearBoss()
 	}
 }
 
-void Game::HPBuffUpdate(const float &dt)
+void Game::HPBuffUpdate(const float &dt, Player &player)
 {
 	for (size_t i = 0; i < BuffHP.size(); i++)
 	{
@@ -806,7 +833,7 @@ void Game::HPBuffUpdate(const float &dt)
 	}
 }
 
-void Game::BulletBuffUpdate(const float & dt)
+void Game::BulletBuffUpdate(const float & dt, Player &player)
 {
 	for (size_t i = 0; i < BuffBullet.size(); i++)
 	{
@@ -832,7 +859,17 @@ void Game::BulletBuffUpdate(const float & dt)
 	}
 }
 
+void Game::BuffUpdate(const float & dt, Player & player)
+{
+	// Timer
+	BuffTimerUpdate(dt);
+	
+	// HP Buff Update
+	HPBuffUpdate(dt, player);
 
+	// Bullet Buff Update
+	BulletBuffUpdate(dt, player);
+}
 
 void Game::ResetEnemy()
 {
@@ -846,6 +883,9 @@ void Game::EnemyUpdate(const float & dt)
 	{
 		enemies[i].Update(dt);
 	}
+
+	// Update ebullets
+	EbulletsUpdate(dt);
 }
 
 void Game::PlayerUpdate(const float & dt, Player &player)
@@ -880,25 +920,60 @@ void Game::PlayerUpdate(const float & dt, Player &player)
 		// Move change to methods later
 		player.bullets[i].Move(dt);
 	}
+
+	// Player Bullets & Enemies Collision
+	PBulletEnemyCollision(player);
+	// Player & Enemies Collison
+	PlayerEnemyCollision(player);
+	//Player & Ebullets collision
+	PlayerEbulletsCollision(player);
+
+	PlayerScoreUpdate(player);
+
+	PlayerStateUpdate(player);
+}
+
+void Game::PlayerStateUpdate(Player & player)
+{
+	// Update player state
+	if (player.HP == 0)
+	{
+		player.hpBar.setSize(Vector2f(20.f * player.HP, 5.f));
+
+		this->endScoreText.setPosition(Vector2f(window->getSize().x / 2 - 200.f,
+			window->getSize().y / 2.f - endScoreText.getGlobalBounds().height / 2));
+
+		this->endScoreText.setString("    GAME OVER!\n      SCORE: " + std::to_string(player.score) +
+			"\nPress space to restart or ESC to exit");
+
+		ClearEnemy();
+		gameIsOver = true;
+	}
+}
+
+void Game::PlayerScoreUpdate(Player & player)
+{
+	// Update score
+	score.setString("SCORE: " + std::to_string(player.score));
 }
 
 void Game::TextboxUpdate()
 {
 	if (player.score >= 50 && !isFifty)
 	{
-		this->textbox.Add("You've reached 50pt, watch out for the BOSS!!", false);
+		this->textbox.Add("You've reached 50pt, watch out for the BOSS!!", true, &robot);
 		this->isFifty = true;
 	}
 
 	if (havePickedHP)
 	{
-		this->textbox.Add("You've picked one HP Buff: health +1.     Your HP: " + std::to_string(player.HP), false);
+		this->textbox.Add("You've picked one HP Buff: health +1.     Your HP: " + std::to_string(player.HP), true, &colonel);
 		this->havePickedHP = false;
 	}
 
 	if (pickedBulletBuff)
 	{
-		this->textbox.Add("You've picked one Bullet Buff: Your shooting mode: strafet", false);
+		this->textbox.Add("You've picked one Bullet Buff: Your shooting mode: strafet", true, &colonel);
 		this->pickedBulletBuff = false;
 	}
 }
@@ -1001,5 +1076,3 @@ void Game::Draw(float dt)
 
 	window->display();
 }
-
-

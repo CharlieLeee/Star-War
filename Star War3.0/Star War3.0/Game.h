@@ -21,21 +21,51 @@ public:
 
 	RenderWindow *window;
 	
+	// Timers
+	void PlayerTimerUpdate(const float &dt, Player &player);
+	void EnemyTimerUpdate(const float &dt);
+	void BomberTimerUpdate(const float &dt);
+	void BuffTimerUpdate(const float &dt);
+	void BossTimerUpdate(const float &dt);
+
+	// Boss
+	void GenerateBoss();
+	void BossShoot(const float &dt);
+	void BossUpdate(const float &dt, Player &player);
+
+	// Index calculation
 	void CounterReset();
 	void CalculateIndex();
 
+	// Backgrounds
 	void BackgroundUpdate(const float &dt);
-	void GenerateEnemyBullet();
+	
+	// EBullets
+	void GenerateEnemyBullet(const float &dt);
+	void EbulletsMovement(const float &dt);
+	void EbulletsUpdate(const float &dt);
 
-	void BomberUpdate(const float &dt);
-	void BomberPlayerBulCollision();
+	// Bomber
+	void BomberUpdate(const float &dt, Player &player);
+	void BomberPlayerBulCollision(Player &player);
 
+	// Collisions
 	void PBulletEnemyCollision(Player &player);
 	void PlayerEnemyCollision(Player &player);
 	void PlayerBossCollision(Player &player);
 	void PlayerBulletBossCollision(Player &player);
+	void PlayerEbulletsCollision(Player &player);
 
 	void ExplosionUpdate(float speed, const float &dt);
+
+	// Enemy
+	void ResetEnemy();
+	void EnemyUpdate(const float &dt);
+
+	// Player
+	void PlayerUpdate(const float &dt, Player &player);
+	void PlayerStateUpdate(Player &player);
+	void PlayerScoreUpdate(Player &player);
 
 	void ClearPlayerBullets(Player &player);
 	void ClearEnemy();
@@ -47,11 +77,14 @@ public:
 	void ClearState();
 	void ClearBoss();
 
-	void HPBuffUpdate(const float &dt);
-	void BulletBuffUpdate(const float &dt);
-	void ResetEnemy();
-	void EnemyUpdate(const float &dt);
-	void PlayerUpdate(const float &dt, Player &player);
+	// Buffs
+	void HPBuffUpdate(const float &dt, Player &player);
+	void BulletBuffUpdate(const float &dt, Player &player);
+	void BuffUpdate(const float &dt, Player &player);
+	
+	
+	
+	
 	void TextboxUpdate();
 
 	void Update(float dt);
@@ -202,6 +235,7 @@ private:
 
 	// Character texutres
 	Texture son;
-
+	Texture robot;
+	Texture colonel;
 };
 

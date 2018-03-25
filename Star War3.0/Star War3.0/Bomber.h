@@ -13,7 +13,7 @@ public:
 	Vector2f posi;
 	Vector2f aimdir;
 	
-	float mult = 62.5f;
+	float mult;
 	int range;
 
 	void Draw(RenderWindow *window);

@@ -18,6 +18,8 @@ Bomber::Bomber(Texture *texture, Vector2u windowSize)
 	{
 		this->shape.setPosition(2 * windowSize.x / 3 + rand() % this->range, windowSize.y);
 	}
+
+	this->mult = 62.5f;
 }
 
 Bomber::~Bomber()
