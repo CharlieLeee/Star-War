@@ -168,12 +168,40 @@ Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture
 
 Game::~Game() { }
 
+void Game::Run()
+{
+	Clock clock;
+	float deltaTime = 0.f;
+
+	while (this->window->isOpen())
+	{
+		ProcessEvent();
+		deltaTime = clock.restart().asSeconds();
+		this->Update(deltaTime);
+		this->Draw(deltaTime);
+	}
+}
+
+void Game::ProcessEvent()
+{
+	Event event;
+	while (this->window->pollEvent(event))
+	{
+		if (event.type == Event::Closed || (event.type == Event::KeyPressed && event.key.code == Keyboard::Escape))
+		{
+			this->window->close();
+			break;
+		}
+	}
+}
+
 void Game::Update(float dt)
 {
 	// Update logo
 	logo.Update(0, dt);
 	logoShape.setTextureRect(logo.uvRect);
 
+	std::cout << enemyCnt << std::endl;
 
 	if (!isMenu)
 	{
@@ -187,7 +215,7 @@ void Game::Update(float dt)
 			player.ResetVelocity();
 			background.setVolume(5.f);
 			textbox.Clear();
-			ClearEnemy();
+			ClearEnemy(enemies);
 			ClearBomber();
 			ClearBuff();
 			ClearState();
@@ -230,10 +258,10 @@ void Game::Update(float dt)
 			BuffUpdate(dt, player);
 
 			// Update player
-			PlayerUpdate(dt, player);
+			PlayerUpdate(dt, player, enemies);
 						
 			// Update enemies movement & hp
-			EnemyUpdate(dt);
+			EnemyUpdate(dt, enemies);
 			
 			// Bomber update
 			BomberUpdate(dt, player);
@@ -285,7 +313,7 @@ void Game::PlayerTimerUpdate(const float & dt, Player &player)
 		player.shootCnt += dt;
 }
 
-void Game::EnemyTimerUpdate(const float & dt)
+void Game::EnemyTimerUpdate(const float & dt, std::vector<Enemy> &enemies)
 {
 	// Update enemy spawn lapse
 	if (this->spawnCnt < this->spawnLapse)
@@ -453,10 +481,10 @@ void Game::BackgroundUpdate(const float & dt)
 	moving.UpdateMovingBack(this->window, dt, Vector2f(backgroundSpeed.x - abs(player.currentV.x) / 4, 0.f));
 }
 
-void Game::GenerateEnemyBullet(const float &dt)
+void Game::GenerateEnemyBullet(const float &dt, std::vector<Enemy> &enemies)
 {
 	// Timer
-	EnemyTimerUpdate(dt);
+	EnemyTimerUpdate(dt, enemies);
 	
 	// Enemy bullets generate
 	for (size_t i = enemyIndex; i < enemies.size(); i++)
@@ -476,7 +504,7 @@ void Game::GenerateEnemyBullet(const float &dt)
 	}
 }
 
-void Game::EbulletsMovement(const float & dt)
+void Game::EbulletsMovement(const float & dt, std::vector<Enemy> &enemies)
 {
 	for (size_t i = ebulletIndex; i < ebullets.size(); i++)
 	{
@@ -484,10 +512,10 @@ void Game::EbulletsMovement(const float & dt)
 	}
 }
 
-void Game::EbulletsUpdate(const float & dt)
+void Game::EbulletsUpdate(const float & dt, std::vector<Enemy> &enemies)
 {
-	this->GenerateEnemyBullet(dt);
-	this->EbulletsMovement(dt);
+	this->GenerateEnemyBullet(dt, enemies);
+	this->EbulletsMovement(dt, enemies);
 }
 
 void Game::BomberUpdate(const float &dt, Player &player)
@@ -562,7 +590,7 @@ void Game::BomberPlayerBulCollision(Player &player)
 	}
 }
 
-void Game::PBulletEnemyCollision(Player &player)
+void Game::PBulletEnemyCollision(Player &player, std::vector<Enemy> &enemies)
 {
 	bool bulletErased = false;
 	bool enemyErased = false;
@@ -613,7 +641,7 @@ void Game::PBulletEnemyCollision(Player &player)
 	}
 }
 
-void Game::PlayerEnemyCollision(Player &player)
+void Game::PlayerEnemyCollision(Player &player, std::vector<Enemy> &enemies)
 {
 	// Check player & enemies collision
 	for (size_t i = enemyIndex; i < enemies.size(); i++)
@@ -734,7 +762,7 @@ void Game::ClearPlayerBullets(Player &player)
 	}
 }
 
-void Game::ClearEnemy()
+void Game::ClearEnemy(std::vector<Enemy> &enemies)
 {
 	for (size_t i = 0; i < enemies.size(); i++)
 	{
@@ -794,6 +822,7 @@ void Game::ClearState()
 	this->isFifty = false;
 	this->havePickedHP = false;
 	this->generateBoss = false;
+	this->shootingType = this->regularBullet;
 }
 
 void Game::ClearBoss()
@@ -877,7 +906,7 @@ void Game::ResetEnemy()
 	this->spawnLapse = 2.1f;
 }
 
-void Game::EnemyUpdate(const float & dt)
+void Game::EnemyUpdate(const float & dt, std::vector<Enemy> &enemies)
 {
 	for (size_t i = enemyIndex; i < enemies.size(); i++)
 	{
@@ -885,10 +914,10 @@ void Game::EnemyUpdate(const float & dt)
 	}
 
 	// Update ebullets
-	EbulletsUpdate(dt);
+	EbulletsUpdate(dt, enemies);
 }
 
-void Game::PlayerUpdate(const float & dt, Player &player)
+void Game::PlayerUpdate(const float & dt, Player &player, std::vector<Enemy> &enemies)
 {
 	// Player Update position
 	player.Update(*window, dt);
@@ -922,9 +951,9 @@ void Game::PlayerUpdate(const float & dt, Player &player)
 	}
 
 	// Player Bullets & Enemies Collision
-	PBulletEnemyCollision(player);
+	PBulletEnemyCollision(player, enemies);
 	// Player & Enemies Collison
-	PlayerEnemyCollision(player);
+	PlayerEnemyCollision(player, enemies);
 	//Player & Ebullets collision
 	PlayerEbulletsCollision(player);
 
@@ -946,7 +975,7 @@ void Game::PlayerStateUpdate(Player & player)
 		this->endScoreText.setString("    GAME OVER!\n      SCORE: " + std::to_string(player.score) +
 			"\nPress space to restart or ESC to exit");
 
-		ClearEnemy();
+		ClearEnemy(enemies);
 		gameIsOver = true;
 	}
 }

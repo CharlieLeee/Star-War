@@ -1,4 +1,5 @@
-﻿  main.cpp
+﻿  Game.cpp
+  main.cpp
 d:\05development\sfml repo\star-war\star war3.0\star war3.0\main.cpp(7): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  Generating Code...
   Star War3.0.vcxproj -> D:\05Development\SFML Repo\Star-War\Star War3.0\Debug\Star War3.0.exe
-  Star War3.0.vcxproj -> D:\05Development\SFML Repo\Star-War\Star War3.0\Debug\Star War3.0.pdb (Full PDB)

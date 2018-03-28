@@ -23,7 +23,7 @@ public:
 	
 	// Timers
 	void PlayerTimerUpdate(const float &dt, Player &player);
-	void EnemyTimerUpdate(const float &dt);
+	void EnemyTimerUpdate(const float & dt, std::vector<Enemy> &enemies);
 	void BomberTimerUpdate(const float &dt);
 	void BuffTimerUpdate(const float &dt);
 	void BossTimerUpdate(const float &dt);
@@ -41,17 +41,17 @@ public:
 	void BackgroundUpdate(const float &dt);
 	
 	// EBullets
-	void GenerateEnemyBullet(const float &dt);
-	void EbulletsMovement(const float &dt);
-	void EbulletsUpdate(const float &dt);
+	void GenerateEnemyBullet(const float &dt, std::vector<Enemy> &enemies);
+	void EbulletsMovement(const float &dt, std::vector<Enemy> &enemies);
+	void EbulletsUpdate(const float &dt, std::vector<Enemy> &enemies);
 
 	// Bomber
 	void BomberUpdate(const float &dt, Player &player);
 	void BomberPlayerBulCollision(Player &player);
 
 	// Collisions
-	void PBulletEnemyCollision(Player &player);
-	void PlayerEnemyCollision(Player &player);
+	void PBulletEnemyCollision(Player &player, std::vector<Enemy> &enemies);
+	void PlayerEnemyCollision(Player &player, std::vector<Enemy> &enemies);
 	void PlayerBossCollision(Player &player);
 	void PlayerBulletBossCollision(Player &player);
 	void PlayerEbulletsCollision(Player &player);
@@ -60,15 +60,15 @@ public:
 
 	// Enemy
 	void ResetEnemy();
-	void EnemyUpdate(const float &dt);
+	void EnemyUpdate(const float &dt, std::vector<Enemy> &enemies);
 
 	// Player
-	void PlayerUpdate(const float &dt, Player &player);
+	void PlayerUpdate(const float & dt, Player &player, std::vector<Enemy> &enemies);
 	void PlayerStateUpdate(Player &player);
 	void PlayerScoreUpdate(Player &player);
 
 	void ClearPlayerBullets(Player &player);
-	void ClearEnemy();
+	void ClearEnemy(std::vector<Enemy> &enemies);
 	void ClearBomber();
 	void ClearEBullets(); 
 	void ClearExplosion();
@@ -87,6 +87,9 @@ public:
 	
 	void TextboxUpdate();
 
+	// Game
+	void Run();
+	void ProcessEvent();
 	void Update(float dt);
 	void Draw(float dt);
 
