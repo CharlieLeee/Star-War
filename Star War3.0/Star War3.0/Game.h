@@ -9,6 +9,7 @@
 #include "Bomber.h"
 #include "Buff.h"
 #include "Textbox.h"
+#include "Collision.h"
 
 class Game
 {

@@ -201,8 +201,6 @@ void Game::Update(float dt)
 	logo.Update(0, dt);
 	logoShape.setTextureRect(logo.uvRect);
 
-	std::cout << enemyCnt << std::endl;
-
 	if (!isMenu)
 	{
 		background.setVolume(10.f);
@@ -670,7 +668,7 @@ void Game::PlayerBossCollision(Player &player)
 {
 	for (size_t i = 0; i < boss.size(); i++)
 	{
-		if (boss[i].shape.getGlobalBounds().intersects(player.shape.getGlobalBounds()))
+		if (Collision::PixelPerfectTest(boss[i].shape, player.shape))
 		{
 			endSound.play();
 			player.HP = 0;
@@ -688,7 +686,7 @@ void Game::PlayerBulletBossCollision(Player & player)
 	{
 		for (size_t j = 0; j < boss.size() && !bossErased; j++)
 		{
-			if (player.bullets[i].shape.getGlobalBounds().intersects(boss[j].shape.getGlobalBounds()) && boss[j].IsInScene(this->window))
+			if (Collision::PixelPerfectTest(player.bullets[i].shape, boss[j].shape) && boss[j].IsInScene(this->window))
 			{
 				boss[j].HP--;
 				eshotSound.play();
@@ -1062,12 +1060,7 @@ void Game::Draw(float dt)
 				bomber[i].Draw(this->window);
 			}
 
-			// Draw boss
-			for (size_t i = 0; i < boss.size(); i++)
-			{
-				boss[i].Draw(window);
-			}
-
+			
 			// Draw enemy bullets
 			for (size_t i = ebulletIndex; i < ebullets.size(); i++)
 			{
@@ -1089,6 +1082,12 @@ void Game::Draw(float dt)
 			for (size_t i = 0; i < BuffHP.size(); i++)
 			{
 				BuffHP[i].Draw(window);
+			}
+
+			// Draw boss
+			for (size_t i = 0; i < boss.size(); i++)
+			{
+				boss[i].Draw(window);
 			}
 
 			// Draw Textbox
