@@ -12,6 +12,9 @@ public:
 	// Update once
 	void Update(int row, float deltaTime);
 
+	// Update till last but one
+	void UpdateTill(int row, float deltaTime);
+
 	// Loop updating sprite
 	void UpdateLoop(int row, float deltaTime);
 

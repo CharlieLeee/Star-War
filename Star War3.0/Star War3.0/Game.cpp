@@ -6,12 +6,13 @@ Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture
 	Texture *logoText, float shootLapse, Texture *backgroundMenu, Texture *explosionTex,
 	Texture *movingBack, Texture *bomberTex, Texture *addBullet, Texture *addHP, Texture *bossTex)
 	:player(window, playerTex, bulletTex, shootLapse, true),
-	logo(logoText, Vector2u(40, 1), 0.02f, Vector2f(800.f, 800.f), Vector2f(window->getSize().x / 2 - 400.f,
+	logo(logoText, Vector2u(40, 1), 0.01f, Vector2f(800.f, 800.f), Vector2f(window->getSize().x / 2 - 400.f,
 		window->getSize().y / 2 - 400.f)),
-	playerA(window,playerTex, bulletTex, shootLapse, true),
+	playerA(window, playerTex, bulletTex, shootLapse, true),
 	playerB(window, playerTex, bulletTex, shootLapse, false),
 	menuBack(backgroundMenu, window),
-	moving(movingBack, window)
+	moving(movingBack, window),
+	menu(window->getSize().x, window->getSize().y)
 {
 	// Two Player mode
 	this->isTwoPlayer = false;
@@ -44,7 +45,7 @@ Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture
 	this->gameIsOver = true;
 	this->isMenu = true;
 	this->isDrawCredits = false;
-	this->isFifty = false;
+	this->isHundred = false;
 	this->havePickedHP = false;
 	this->havePickedBullet = false;
 	this->pickedBulletBuff = false;
@@ -122,8 +123,8 @@ Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture
 	this->credits.setPosition(0.f, 0.f);
 
 	// Init menu
-	this->menuCnt = 0.f;
-	this->menuDisplayMax = 2.5f;
+	this->logoCnt = 0.f;
+	this->logoDisplayMax = 2.5f;
 	this->menuText.setFont(font);
 	this->menuText.setCharacterSize(50);
 	this->menuText.setFillColor(Color::White);
@@ -187,10 +188,53 @@ void Game::ProcessEvent()
 	Event event;
 	while (this->window->pollEvent(event))
 	{
-		if (event.type == Event::Closed || (event.type == Event::KeyPressed && event.key.code == Keyboard::Escape))
+		switch (event.type)
 		{
+		case Event::Closed:
 			this->window->close();
 			break;
+		case Event::KeyPressed:
+			switch (event.key.code)
+			{
+			case Keyboard::Escape:
+				this->window->close();
+				break;
+			case Keyboard::Return:
+				switch (menu.GetLine())
+				{
+				case 0:
+					gameIsOver = false;
+					isMenu = false;
+					textbox.Clear();
+					textbox.Add("Aye Captain! Welcome on board\nPress K to shoot\nPress WASD to move", true);
+					welcome.play();
+					break;
+				case 1:
+					isTwoPlayer = true;
+					break;
+				case 2:
+					isDrawCredits = true;
+					break;
+				case 3:
+					this->window->close();
+					break;
+				}
+			}
+			break;
+		case Event::KeyReleased:
+			if (this->isMenu)
+			{
+				if (event.key.code == Keyboard::Down)
+				{
+					menu.MovedDown();
+					break;
+				}
+				else if (event.key.code == Keyboard::Up)
+				{
+					menu.MoveUp();
+					break;
+				}
+			}
 		}
 	}
 }
@@ -198,7 +242,7 @@ void Game::ProcessEvent()
 void Game::Update(float dt)
 {
 	// Update logo
-	logo.Update(0, dt);
+	logo.UpdateTill(0, dt);
 	logoShape.setTextureRect(logo.uvRect);
 
 	if (!isMenu)
@@ -242,7 +286,7 @@ void Game::Update(float dt)
 
 			// Update background
 			BackgroundUpdate(dt);
-			
+
 			// Update timer
 			PlayerTimerUpdate(dt, player);
 
@@ -257,10 +301,10 @@ void Game::Update(float dt)
 
 			// Update player
 			PlayerUpdate(dt, player, enemies);
-						
+
 			// Update enemies movement & hp
 			EnemyUpdate(dt, enemies);
-			
+
 			// Bomber update
 			BomberUpdate(dt, player);
 
@@ -269,40 +313,105 @@ void Game::Update(float dt)
 		}
 	}
 
-	else // IsMenu
+}
+
+void Game::Draw(float dt)
+{
+	if (isMenu)
 	{
+		// White background in menu
+		window->clear(Color::White);
+		logoCnt += dt;
+		if (gameIsOver)
+		{
+			if (logoCnt > logoDisplayMax)
+			{
+				DrawMenu(this->window);
+			}
+			else
+			{
+				DrawLogo(this->window);
+			}
+		}
 		if (isDrawCredits)
 		{
-			if (Keyboard::isKeyPressed(Keyboard::B))
-			{
-				isDrawCredits = false;
-			}
+			window->draw(credits);
 		}
+	}
+	else
+	{
+		window->clear();
 
+		if (!gameIsOver)
+		{
+			// Draw game loop
+
+			// Draw background
+			DrawBackground(moving, this->window);
+
+			// Player's bullets
+			for (size_t i = bulletIndex; i < player.bullets.size(); i++)
+			{
+				window->draw(player.bullets[i].shape);
+			}
+			// Player
+			player.Draw(*window);
+
+			// Enemy
+			for (size_t i = enemyIndex; i < enemies.size(); i++)
+			{
+				enemies[i].Draw(*window);
+			}
+
+			// Bomber
+			for (size_t i = bomberIndex; i < bomber.size(); i++)
+			{
+				bomber[i].Draw(this->window);
+			}
+
+
+			// Draw enemy bullets
+			for (size_t i = ebulletIndex; i < ebullets.size(); i++)
+			{
+				window->draw(ebullets[i].shape);
+			}
+
+			// Draw explosion
+			for (size_t i = 0; i < explosion.size(); i++)
+			{
+				explosion[i].Draw(this->window);
+			}
+
+			// Draw Buff
+			for (size_t i = 0; i < BuffBullet.size(); i++)
+			{
+				BuffBullet[i].Draw(window);
+			}
+
+			for (size_t i = 0; i < BuffHP.size(); i++)
+			{
+				BuffHP[i].Draw(window);
+			}
+
+			// Draw boss
+			for (size_t i = 0; i < boss.size(); i++)
+			{
+				boss[i].Draw(window);
+			}
+
+			// Draw Textbox
+			textbox.Render(*window);
+
+			// Score
+			window->draw(score);
+		}
 		else
 		{
-			if (Keyboard::isKeyPressed(Keyboard::N))
-			{
-				isMenu = false;
-				gameIsOver = false;
-				textbox.Clear();
-				textbox.Add("Aye Captain! Welcome on board\nPress K to shoot\nPress WASD to move", true);
-
-				welcome.play();
-			}
-
-			else if (Keyboard::isKeyPressed(Keyboard::C))
-			{
-				isDrawCredits = true;
-			}
-
-			else if (Keyboard::isKeyPressed(Keyboard::Q))
-			{
-				window->close();
-			}
+			window->draw(endScoreText);
 		}
-
 	}
+
+	window->display();
 }
 
 void Game::PlayerTimerUpdate(const float & dt, Player &player)
@@ -324,7 +433,7 @@ void Game::EnemyTimerUpdate(const float & dt, std::vector<Enemy> &enemies)
 		spawnCnt -= spawnLapse;
 		enemyCnt++;
 	}
-	
+
 	// Update enemies' timers
 	for (size_t i = enemyIndex; i < enemies.size(); i++)
 	{
@@ -373,7 +482,7 @@ void Game::BossTimerUpdate(const float & dt)
 
 void Game::GenerateBoss()
 {
-	if (player.score % 50 == 0 && player.score != 0 && !generateBoss)
+	if (player.score % 100 == 0 && player.score != 0 && !generateBoss)
 	{
 		boss.push_back(Boss(6.f, &bossTex, 20, this->window->getSize()));
 		this->generateBoss = true;
@@ -483,7 +592,7 @@ void Game::GenerateEnemyBullet(const float &dt, std::vector<Enemy> &enemies)
 {
 	// Timer
 	EnemyTimerUpdate(dt, enemies);
-	
+
 	// Enemy bullets generate
 	for (size_t i = enemyIndex; i < enemies.size(); i++)
 	{
@@ -520,7 +629,7 @@ void Game::BomberUpdate(const float &dt, Player &player)
 {
 	//Update timer
 	BomberTimerUpdate(dt);
-	
+
 	// Bomber Player collision
 	for (size_t i = bomberIndex; i < bomber.size(); i++)
 	{
@@ -817,10 +926,10 @@ void Game::CLearOutBoundExplosion()
 
 void Game::ClearState()
 {
-	this->isFifty = false;
+	this->isHundred = false;
 	this->havePickedHP = false;
 	this->generateBoss = false;
-	this->shootingType = this->regularBullet;
+	this->havePickedBullet = false;
 }
 
 void Game::ClearBoss()
@@ -841,8 +950,7 @@ void Game::HPBuffUpdate(const float &dt, Player &player)
 	{
 		if (BuffHP[i].shape.getGlobalBounds().intersects(player.shape.getGlobalBounds()))
 		{
-			if (player.HP != player.HPMax)
-				player.HP++;
+			player.HP++;
 
 			havePickedHP = true;
 
@@ -890,12 +998,29 @@ void Game::BuffUpdate(const float & dt, Player & player)
 {
 	// Timer
 	BuffTimerUpdate(dt);
-	
+
 	// HP Buff Update
 	HPBuffUpdate(dt, player);
 
 	// Bullet Buff Update
 	BulletBuffUpdate(dt, player);
+}
+
+void Game::DrawMenu(RenderWindow * window)
+{
+	menuBack.DrawStatic(this->window);
+	//window->draw(menuText);
+	menu.Draw(this->window);
+}
+
+void Game::DrawLogo(RenderWindow * window)
+{
+	window->draw(logoShape);
+}
+
+void Game::DrawBackground(Background & moving, RenderWindow *window)
+{
+	moving.DrawMoving(window);
 }
 
 void Game::ResetEnemy()
@@ -986,10 +1111,10 @@ void Game::PlayerScoreUpdate(Player & player)
 
 void Game::TextboxUpdate()
 {
-	if (player.score >= 50 && !isFifty)
+	if (player.score >= 100 && !isHundred)
 	{
-		this->textbox.Add("You've reached 50pt, watch out for the BOSS!!", true, &robot);
-		this->isFifty = true;
+		this->textbox.Add("You've reached " + std::to_string(player.score) + "pts, watch out for the BOSS!!", true, &robot);
+		this->isHundred = true;
 	}
 
 	if (havePickedHP)
@@ -1005,102 +1130,4 @@ void Game::TextboxUpdate()
 	}
 }
 
-void Game::Draw(float dt)
-{
-	if (isMenu)
-	{
-		// White background in menu
-		window->clear(Color::White);
-		menuCnt += dt;
-		if (gameIsOver)
-		{
-			if (menuCnt > menuDisplayMax)
-			{
-				menuBack.DrawStatic(this->window);
-				window->draw(menuText);
-			}
-			else
-			{
-				window->draw(logoShape);
-			}
-		}
-		if (isDrawCredits)
-		{
-			window->draw(credits);
-		}
-	}
-	else
-	{
-		window->clear();
 
-		if (!gameIsOver)
-		{
-			// Draw game loop
-
-			// Draw background
-			moving.DrawMoving(this->window);
-
-			// Player's bullets
-			for (size_t i = bulletIndex; i < player.bullets.size(); i++)
-			{
-				window->draw(player.bullets[i].shape);
-			}
-			// Player
-			player.Draw(*window);
-
-			// Enemy
-			for (size_t i = enemyIndex; i < enemies.size(); i++)
-			{
-				enemies[i].Draw(*window);
-			}
-
-			// Bomber
-			for (size_t i = bomberIndex; i < bomber.size(); i++)
-			{
-				bomber[i].Draw(this->window);
-			}
-
-			
-			// Draw enemy bullets
-			for (size_t i = ebulletIndex; i < ebullets.size(); i++)
-			{
-				window->draw(ebullets[i].shape);
-			}
-
-			// Draw explosion
-			for (size_t i = 0; i < explosion.size(); i++)
-			{
-				explosion[i].Draw(this->window);
-			}
-
-			// Draw Buff
-			for (size_t i = 0; i < BuffBullet.size(); i++)
-			{
-				BuffBullet[i].Draw(window);
-			}
-
-			for (size_t i = 0; i < BuffHP.size(); i++)
-			{
-				BuffHP[i].Draw(window);
-			}
-
-			// Draw boss
-			for (size_t i = 0; i < boss.size(); i++)
-			{
-				boss[i].Draw(window);
-			}
-
-			// Draw Textbox
-			textbox.Render(*window);
-
-			// Score
-			window->draw(score);
-		}
-		else
-		{
-			window->draw(endScoreText);
-		}
-	}
-
-	window->display();
-}

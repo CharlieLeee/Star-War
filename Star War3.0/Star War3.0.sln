@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2015
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Star War3.0", "Star War3.0\Star War3.0.vcxproj", "{4160DAD7-EA38-4344-B606-0ED296D6C713}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "StarWarSetUp", "StarWarSetUp\StarWarSetUp.vdproj", "{39E7FF25-0BE8-45CD-B3EF-821207F37DA1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,8 +23,15 @@ Global
 		{4160DAD7-EA38-4344-B606-0ED296D6C713}.Release|x64.Build.0 = Release|x64
 		{4160DAD7-EA38-4344-B606-0ED296D6C713}.Release|x86.ActiveCfg = Release|Win32
 		{4160DAD7-EA38-4344-B606-0ED296D6C713}.Release|x86.Build.0 = Release|Win32
+		{39E7FF25-0BE8-45CD-B3EF-821207F37DA1}.Debug|x64.ActiveCfg = Debug
+		{39E7FF25-0BE8-45CD-B3EF-821207F37DA1}.Debug|x86.ActiveCfg = Debug
+		{39E7FF25-0BE8-45CD-B3EF-821207F37DA1}.Release|x64.ActiveCfg = Release
+		{39E7FF25-0BE8-45CD-B3EF-821207F37DA1}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {688F98A7-8793-4B59-A301-EB26448BB7C0}
 	EndGlobalSection
 EndGlobal

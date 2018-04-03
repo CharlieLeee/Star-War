@@ -18,6 +18,7 @@ int main()
 	Texture logoText;
 	logoText.loadFromFile("Textures/logo.png");
 	Texture explosion;
+	//explosion.loadFromFile("Textures/explosion.png");
 	explosion.loadFromFile("Textures/explosion.png");
 
 	// Menu background

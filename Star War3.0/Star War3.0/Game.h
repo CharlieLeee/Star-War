@@ -10,6 +10,7 @@
 #include "Buff.h"
 #include "Textbox.h"
 #include "Collision.h"
+#include "Menu.h"
 
 class Game
 {
@@ -21,7 +22,8 @@ public:
 
 
 	RenderWindow *window;
-	
+	Menu menu;
+
 	// Timers
 	void PlayerTimerUpdate(const float &dt, Player &player);
 	void EnemyTimerUpdate(const float & dt, std::vector<Enemy> &enemies);
@@ -83,8 +85,10 @@ public:
 	void BulletBuffUpdate(const float &dt, Player &player);
 	void BuffUpdate(const float &dt, Player &player);
 	
-	
-	
+	// Draw
+	void DrawMenu(RenderWindow *window);
+	void DrawLogo(RenderWindow *window);
+	void DrawBackground(Background &moving, RenderWindow *window);
 	
 	void TextboxUpdate();
 
@@ -125,7 +129,7 @@ private:
 	bool gameIsOver;
 	bool isMenu;
 	bool isDrawCredits;
-	bool isFifty;
+	bool isHundred;
 	bool havePickedHP;
 	bool havePickedBullet; // Used to control bullet buff time
 	bool pickedBulletBuff; // Used to display buff info
@@ -203,8 +207,8 @@ private:
 	Texture bossTex;
 
 	// Menu
-	float menuCnt;
-	float menuDisplayMax;
+	float logoCnt;
+	float logoDisplayMax;
 	Text menuText;
 
 	// Score text

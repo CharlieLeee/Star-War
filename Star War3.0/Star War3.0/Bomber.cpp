@@ -10,13 +10,14 @@ Bomber::Bomber(Texture *texture, Vector2u windowSize)
 	this->shape.setOrigin(size);
 
 	this->range = windowSize.x / 2 + this->shape.getGlobalBounds().width;
+	int ratio = rand() % 4 + 1;
 	if (rand() % 2 == 1)
 	{
-		this->shape.setPosition(2 * windowSize.x / 3 + rand() % this->range, 0.f);
+		this->shape.setPosition(ratio * windowSize.x / 4 + rand() % this->range, 0.f);
 	}
 	else
 	{
-		this->shape.setPosition(2 * windowSize.x / 3 + rand() % this->range, windowSize.y);
+		this->shape.setPosition(ratio * windowSize.x / 4 + rand() % this->range, windowSize.y);
 	}
 
 	this->mult = 62.5f;

@@ -34,10 +34,10 @@ void Textbox::Setup(int l_visible, int l_charSize,
 	m_content.setPosition(l_screenPos + l_offset);
 
 	m_backdrop.setSize(Vector2f(
-		l_width, (l_charSize * 5.f)) // 1.2f indicates space between lines
+		l_width, (l_charSize * 8.f)) // 1.2f indicates space between lines
 	);
 
-	photo.setSize(Vector2f(80.f, l_charSize * 5.f));
+	photo.setSize(Vector2f(l_charSize * 8.f, l_charSize * 8.f));
 	photo.setPosition(Vector2f(l_screenPos.x - photo.getSize().x / 2 + l_width - photo.getSize().x / 2,
 		l_screenPos.y)
 	);

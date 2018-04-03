@@ -46,7 +46,7 @@ void Animation::Update(int row, float deltaTime)
 			currentImage.x++;
 
 
-			if (currentImage.x == imageCount.x - 1)
+			if (currentImage.x == imageCount.x)
 			{
 				loopIsDone = true;
 			}
@@ -55,6 +55,32 @@ void Animation::Update(int row, float deltaTime)
 
 	uvRect.left = currentImage.x * uvRect.width;
 	
+	uvRect.top = currentImage.y * uvRect.height;
+}
+
+void Animation::UpdateTill(int row, float deltaTime)
+{
+	// Set current image's y to the y of row
+	currentImage.y = row;
+
+	totalTime += deltaTime;
+	if (!loopIsDone)
+	{
+		if (totalTime >= switchTime)
+		{
+			totalTime -= switchTime;
+			currentImage.x++;
+
+
+			if (currentImage.x == imageCount.x - 1)
+			{
+				loopIsDone = true;
+			}
+		}
+	}
+
+	uvRect.left = currentImage.x * uvRect.width;
+
 	uvRect.top = currentImage.y * uvRect.height;
 }
 
