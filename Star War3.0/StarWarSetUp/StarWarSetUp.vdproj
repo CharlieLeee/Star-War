@@ -39,6 +39,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_0665AA74E4D847D2B0D5D617E9CB36E7"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_0674A8D08B3249558B7FC43A524F68D7"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -380,6 +386,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.6.1"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.6.1 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.6.1"
+                    }
+                }
             }
         }
         "Release"
@@ -500,6 +514,26 @@
             "TargetName" = "8:type_B.png"
             "Tag" = "8:"
             "Folder" = "8:_985AFCC0F9A6496981813A25440D7BF3"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0665AA74E4D847D2B0D5D617E9CB36E7"
+            {
+            "SourcePath" = "8:..\\Star War3.0\\Fonts\\JMH Sindbad.ttf"
+            "TargetName" = "8:JMH Sindbad.ttf"
+            "Tag" = "8:"
+            "Folder" = "8:_C8972239B81C42E6842CEE250E26B28D"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1644,7 +1678,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Star War v3.0"
         "ProductCode" = "8:{5E5D5BBB-4DE0-46CA-9E98-155D488B858D}"
-        "PackageCode" = "8:{5B1F5F69-7669-4A67-854C-C272E25FA025}"
+        "PackageCode" = "8:{1D0EE21F-2D7A-4FD3-B686-E94419A18223}"
         "UpgradeCode" = "8:{892E2CC7-F4D4-4753-A998-1B61CD3176D9}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -1655,7 +1689,7 @@
         "Manufacturer" = "8:Thugs"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
-        "Title" = "8:Star War"
+        "Title" = "8:Star Wars"
         "Subject" = "8:"
         "ARPCONTACT" = "8:Thugs"
         "Keywords" = "8:"
@@ -1766,7 +1800,7 @@
         {
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_333C6D41476F4E6FB3605EF458BEAE0E"
             {
-            "Name" = "8:Star War"
+            "Name" = "8:Star Wars"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -2193,7 +2227,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_6DA4B23CFA4D40C38DCD7AE1C7536601"
             {
-            "SourcePath" = "8:..\\Release\\Star War3.0.exe"
+            "SourcePath" = "8:..\\Release\\Star Wars3.0.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_FDB0BE8D12444EA589EB02C395279BE7"

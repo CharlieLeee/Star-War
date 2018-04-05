@@ -57,7 +57,10 @@ public:
 public:
 	// Helper function
 	void shoot(Vector2f speed, Vector2f accelerationType);
-	void Movement(RenderTarget &window, float dt);
+	void Movement(RenderTarget &window, float dt, Keyboard::Key UpKey = Keyboard::W
+		, Keyboard::Key DownKey = Keyboard::S
+		, Keyboard::Key LeftKey = Keyboard::A
+		, Keyboard::Key RightKey = Keyboard::D);
 	void Reset();
 	void ResetVelocity();
 	void BounceOff();

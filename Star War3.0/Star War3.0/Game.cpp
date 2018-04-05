@@ -12,11 +12,17 @@ Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture
 	playerB(window, playerTex, bulletTex, shootLapse, false),
 	menuBack(backgroundMenu, window),
 	moving(movingBack, window),
-	menu(window->getSize().x, window->getSize().y)
-{
-	// Two Player mode
-	this->isTwoPlayer = false;
+	menu(window->getSize().x, window->getSize().y),
+	isTwoPlayer(false),
+	gameIsOver(true),
+	isMenu(true),
+	isDrawCredits(false),
+	isHundred(false),
+	havePickedHP(false),
+	havePickedBullet(false),
+	pickedBulletBuff(false)
 
+{
 	// Init Buff
 	this->addBullet = addBullet;
 	this->addHP = addHP;
@@ -36,19 +42,9 @@ Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture
 
 	// Init window
 	this->window = window;
-	//this->window->setFramerateLimit(60);
 
 	// Init fonts
 	this->font.loadFromFile("Fonts/Dosis-Light.ttf");
-
-	// Init States
-	this->gameIsOver = true;
-	this->isMenu = true;
-	this->isDrawCredits = false;
-	this->isHundred = false;
-	this->havePickedHP = false;
-	this->havePickedBullet = false;
-	this->pickedBulletBuff = false;
 
 	// Init logo
 	this->logoTex = logoText;
@@ -141,9 +137,6 @@ Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture
 	this->gameLOGOText.setFont(font);
 	this->gameLOGOText.setCharacterSize(30);
 	this->gameLOGOText.setFillColor(Color::Red);
-	/*this->gameLOGOText.setPosition(window->getSize().x / 2 - 200,
-		window->getSize().y / 2 - gameLOGOText.getGlobalBounds().height / 2);
-	this->gameLOGOText.setString("WELCOME TO SPACE SHOOTER!!\n          PRESS SPACE TO START\n          PRESS K TO SHOOT\n\n          made by Charlie");*/
 
 	// Endscore text
 	this->endScoreText.setFont(font);
@@ -176,6 +169,7 @@ void Game::Run()
 
 	while (this->window->isOpen())
 	{
+		std::cout << gameIsOver << std::endl;
 		ProcessEvent();
 		deltaTime = clock.restart().asSeconds();
 		this->Update(deltaTime);
@@ -199,37 +193,60 @@ void Game::ProcessEvent()
 			case Keyboard::Escape:
 				this->window->close();
 				break;
-			case Keyboard::Return:
-				switch (menu.GetLine())
+			case Keyboard::B:
+				if (isDrawCredits)
 				{
-				case 0:
-					gameIsOver = false;
-					isMenu = false;
-					textbox.Clear();
-					textbox.Add("Aye Captain! Welcome on board\nPress K to shoot\nPress WASD to move", true);
-					welcome.play();
-					break;
-				case 1:
-					isTwoPlayer = true;
-					break;
-				case 2:
-					isDrawCredits = true;
-					break;
-				case 3:
-					this->window->close();
-					break;
+					isDrawCredits = false;
+				}
+				break;
+
+			case Keyboard::Space:
+				if (gameIsOver && !isMenu)
+				{
+					isMenu = true;
+				}
+				break;
+
+			case Keyboard::Return:
+				if (gameIsOver)
+				{
+					switch (menu.GetLine())
+					{
+					case 0: // New game
+						ResetPlayer(player);
+						isTwoPlayer = false;
+						gameIsOver = false;
+						isMenu = false;
+						textbox.Clear();
+						textbox.Add("Aye Captain! Welcome on board\nPress K to shoot\nPress WASD to move", true);
+						welcome.play();
+						break;
+					case 1: // 2P mode
+						ResetPlayer(playerA);
+						ResetPlayer(playerB);
+						gameIsOver = false;
+						isMenu = false;
+						isTwoPlayer = true;
+						break;
+					case 2: // Credits
+						isDrawCredits = true;
+						break;
+					case 3: // Quit
+						this->window->close();
+						break;
+					}
 				}
 			}
 			break;
 		case Event::KeyReleased:
-			if (this->isMenu)
+			if (this->isMenu && !isDrawCredits)
 			{
-				if (event.key.code == Keyboard::Down)
+				if (event.key.code == Keyboard::S)
 				{
 					menu.MovedDown();
 					break;
 				}
-				else if (event.key.code == Keyboard::Up)
+				else if (event.key.code == Keyboard::W)
 				{
 					menu.MoveUp();
 					break;
@@ -258,6 +275,7 @@ void Game::Update(float dt)
 			background.setVolume(5.f);
 			textbox.Clear();
 			ClearEnemy(enemies);
+			ClearEnemy(enemiesB);
 			ClearBomber();
 			ClearBuff();
 			ClearState();
@@ -265,21 +283,12 @@ void Game::Update(float dt)
 			ClearEBullets();
 			ResetEnemy();
 			ClearPlayerBullets(player);
+			ClearPlayerBullets(playerA);
+			ClearPlayerBullets(playerB);
 			ClearExplosion();
 			ClearBoss();
-
-			if (Keyboard::isKeyPressed(Keyboard::Space))
-			{
-				welcome.play();
-				background.setVolume(10.f);
-				gameIsOver = false;
-				textbox.Add("Aye Captain! Welcome on board", true, &son);
-
-				player.Reset();
-			}
-
 		}
-		else // Game starts here
+		else if (!gameIsOver && !isTwoPlayer)// Game starts here
 		{
 			// Calculate Index
 			CalculateIndex();
@@ -309,7 +318,37 @@ void Game::Update(float dt)
 			BomberUpdate(dt, player);
 
 			// Explosion Update
-			ExplosionUpdate(enemySpeed / 2, dt);
+			ExplosionUpdate(enemySpeed / 2, dt, explosion);
+		}
+		else if (!gameIsOver && isTwoPlayer)
+		{
+			// Calculate Index
+			CalculateIndex();
+
+			// Update background
+			BackgroundUpdate(dt);
+
+			// Update timer
+			PlayerTimerUpdate(dt, playerA);
+			PlayerTimerUpdate(dt, playerB);
+
+			// Update Textbox
+			TextboxUpdate();
+
+			// Update Buffs
+			BuffUpdate(dt, playerA);
+			BuffUpdate(dt, playerB);
+
+			// Update player
+			PlayerUpdate(dt, playerA, enemies);
+			PlayerUpdate(dt, playerB, enemiesB);
+
+			// Update enemies movement & hp
+			EnemyUpdate(dt, enemies);
+			EnemyUpdate(dt, enemiesB);
+
+			// Explosion Update
+			ExplosionUpdate(enemySpeed / 2, dt, explosion);
 		}
 	}
 
@@ -342,62 +381,36 @@ void Game::Draw(float dt)
 	{
 		window->clear();
 
-		if (!gameIsOver)
+		if (!gameIsOver && !isTwoPlayer) // Draw game loop
 		{
-			// Draw game loop
-
 			// Draw background
-			DrawBackground(moving, this->window);
+			DrawBackground(moving, this->window, true);
 
 			// Player's bullets
-			for (size_t i = bulletIndex; i < player.bullets.size(); i++)
-			{
-				window->draw(player.bullets[i].shape);
-			}
+			DrawPlayerBullet(this->window, player);
+
 			// Player
-			player.Draw(*window);
+			DrawPlayer(this->window, player);
 
 			// Enemy
-			for (size_t i = enemyIndex; i < enemies.size(); i++)
-			{
-				enemies[i].Draw(*window);
-			}
+			DrawEnemies(this->window, enemies);
 
 			// Bomber
-			for (size_t i = bomberIndex; i < bomber.size(); i++)
-			{
-				bomber[i].Draw(this->window);
-			}
-
+			DrawBomber(this->window, bomber);
 
 			// Draw enemy bullets
-			for (size_t i = ebulletIndex; i < ebullets.size(); i++)
-			{
-				window->draw(ebullets[i].shape);
-			}
+			DrawEBullet(this->window);
 
 			// Draw explosion
-			for (size_t i = 0; i < explosion.size(); i++)
-			{
-				explosion[i].Draw(this->window);
-			}
+			DrawExplosion(this->window, explosion);
 
 			// Draw Buff
-			for (size_t i = 0; i < BuffBullet.size(); i++)
-			{
-				BuffBullet[i].Draw(window);
-			}
+			DrawBuff(this->window, BuffBullet);
 
-			for (size_t i = 0; i < BuffHP.size(); i++)
-			{
-				BuffHP[i].Draw(window);
-			}
+			DrawBuff(this->window, BuffHP);
 
 			// Draw boss
-			for (size_t i = 0; i < boss.size(); i++)
-			{
-				boss[i].Draw(window);
-			}
+			DrawBoss(this->window, boss);
 
 			// Draw Textbox
 			textbox.Render(*window);
@@ -405,7 +418,42 @@ void Game::Draw(float dt)
 			// Score
 			window->draw(score);
 		}
-		else
+		else if (!gameIsOver && isTwoPlayer)
+		{
+			// Draw background
+			DrawBackground(moving, this->window, false);
+
+			// Player's bullets
+			DrawPlayerBullet(this->window, playerA);
+			DrawPlayerBullet(this->window, playerB);
+
+			// Player
+			DrawPlayer(this->window, playerA);
+			DrawPlayer(this->window, playerB);
+
+			// Enemy
+			DrawEnemies(this->window, enemies);
+			DrawEnemies(this->window, enemiesB);
+
+			// Draw enemy bullets
+			DrawEBullet(this->window);
+
+			// Draw explosion
+			DrawExplosion(this->window, explosion);
+
+			// Draw Buff
+			DrawBuff(this->window, BuffBullet);
+
+			DrawBuff(this->window, BuffHP);
+
+			// Draw Textbox
+			textbox.Render(*window);
+
+			// Score
+			window->draw(score);
+		}
+
+		if (gameIsOver)
 		{
 			window->draw(endScoreText);
 		}
@@ -848,7 +896,7 @@ void Game::PlayerEbulletsCollision(Player & player)
 	}
 }
 
-void Game::ExplosionUpdate(float speed, const float & dt)
+void Game::ExplosionUpdate(float speed, const float & dt, std::vector<Animation> &explosion)
 {
 	for (size_t i = 0; i < explosion.size(); i++)
 	{
@@ -1018,9 +1066,73 @@ void Game::DrawLogo(RenderWindow * window)
 	window->draw(logoShape);
 }
 
-void Game::DrawBackground(Background & moving, RenderWindow *window)
+void Game::DrawBackground(Background & back, RenderWindow *window, bool isMoving)
 {
-	moving.DrawMoving(window);
+	if (isMoving)
+		back.DrawMoving(window);
+	else
+		back.DrawStatic(window);
+}
+
+void Game::DrawPlayer(RenderWindow * window, Player & player)
+{
+	player.Draw(*window);
+}
+
+void Game::DrawPlayerBullet(RenderWindow * window, Player & player)
+{
+	for (size_t i = bulletIndex; i < player.bullets.size(); i++)
+	{
+		window->draw(player.bullets[i].shape);
+	}
+}
+
+void Game::DrawEnemies(RenderWindow * window, std::vector<Enemy> enemies)
+{
+	for (size_t i = enemyIndex; i < enemies.size(); i++)
+	{
+		enemies[i].Draw(*window);
+	}
+}
+
+void Game::DrawBomber(RenderWindow * window, std::vector<Bomber>& bomber)
+{
+	for (size_t i = bomberIndex; i < bomber.size(); i++)
+	{
+		bomber[i].Draw(this->window);
+	}
+}
+
+void Game::DrawEBullet(RenderWindow * window)
+{
+	for (size_t i = ebulletIndex; i < ebullets.size(); i++)
+	{
+		window->draw(ebullets[i].shape);
+	}
+}
+
+void Game::DrawExplosion(RenderWindow * window, std::vector<Animation>& explosion)
+{
+	for (size_t i = 0; i < explosion.size(); i++)
+	{
+		explosion[i].Draw(this->window);
+	}
+}
+
+void Game::DrawBuff(RenderWindow * window, std::vector<Buff>& buff)
+{
+	for (size_t i = 0; i < buff.size(); i++)
+	{
+		buff[i].Draw(window);
+	}
+}
+
+void Game::DrawBoss(RenderWindow * window, std::vector<Boss>& boss)
+{
+	for (size_t i = 0; i < boss.size(); i++)
+	{
+		boss[i].Draw(window);
+	}
 }
 
 void Game::ResetEnemy()
@@ -1038,6 +1150,11 @@ void Game::EnemyUpdate(const float & dt, std::vector<Enemy> &enemies)
 
 	// Update ebullets
 	EbulletsUpdate(dt, enemies);
+}
+
+void Game::ResetPlayer(Player & player)
+{
+	player.Reset();
 }
 
 void Game::PlayerUpdate(const float & dt, Player &player, std::vector<Enemy> &enemies)

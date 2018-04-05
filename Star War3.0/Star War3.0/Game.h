@@ -59,13 +59,14 @@ public:
 	void PlayerBulletBossCollision(Player &player);
 	void PlayerEbulletsCollision(Player &player);
 
-	void ExplosionUpdate(float speed, const float &dt);
+	void ExplosionUpdate(float speed, const float & dt, std::vector<Animation> &explosion);
 
 	// Enemy
 	void ResetEnemy();
 	void EnemyUpdate(const float &dt, std::vector<Enemy> &enemies);
 
 	// Player
+	void ResetPlayer(Player &player);
 	void PlayerUpdate(const float & dt, Player &player, std::vector<Enemy> &enemies);
 	void PlayerStateUpdate(Player &player);
 	void PlayerScoreUpdate(Player &player);
@@ -88,8 +89,17 @@ public:
 	// Draw
 	void DrawMenu(RenderWindow *window);
 	void DrawLogo(RenderWindow *window);
-	void DrawBackground(Background &moving, RenderWindow *window);
-	
+	void DrawBackground(Background & back, RenderWindow *window, bool isMoving);
+	void DrawPlayer(RenderWindow *window, Player &player);
+	void DrawPlayerBullet(RenderWindow *window, Player &player);
+	void DrawEnemies(RenderWindow *window, std::vector<Enemy> enemies);
+	void DrawBomber(RenderWindow *window, std::vector<Bomber> &bomber);
+	void DrawEBullet(RenderWindow *window);
+	void DrawExplosion(RenderWindow *window, std::vector<Animation> &explosion);
+	void DrawBuff(RenderWindow *window, std::vector<Buff> &buff);
+	void DrawBoss(RenderWindow *window, std::vector<Boss> &boss);
+
+
 	void TextboxUpdate();
 
 	// Game
@@ -146,6 +156,7 @@ private:
 	float spawnLapse;
 	float enemySpeed;
 	std::vector<Enemy> enemies;
+	std::vector<Enemy> enemiesB;
 	Vector2f enemyAcceleration;
 	Vector2f enemyBulletSpeed;
 	Vector2f eRegularDir;

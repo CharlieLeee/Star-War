@@ -32,13 +32,14 @@ Player::Player(RenderWindow	*window, Texture *texture, Texture *bulletTex, float
 		this->shape.setTexture(*texture);
 
 		// Set initial position
-		this->InitPos = Vector2f(0.f, 45.f);
+		
 
 		if (isLeft)
-			this->shape.setPosition(this->InitPos);
+			this->InitPos = Vector2f(0.f, 45.f);
 		else
-			this->shape.setPosition(window->getSize().x, 0.f);
+			this->InitPos = Vector2f(window->getSize().x, 0.f);
 
+		this->shape.setPosition(this->InitPos);
 		// Init bullet texture
 		this->bulletTex = bulletTex;
 
@@ -76,32 +77,35 @@ void Player::shoot(Vector2f speed, Vector2f accelerationType)
 	this->shootTimer = 0; // Reset timer
 }
 
-void Player::Movement(RenderTarget &window, float dt)
+void Player::Movement(RenderTarget &window, float dt, Keyboard::Key UpKey
+	, Keyboard::Key DownKey
+	, Keyboard::Key LeftKey
+	, Keyboard::Key RightKey)
 {
 	Vector2f direction(0.f, 0.f);
 
-	if (Keyboard::isKeyPressed(Keyboard::A))
+	if (Keyboard::isKeyPressed(LeftKey))
 	{
 		direction.x = -1.f;
 
 		if (currentV.x > -maxV)
 			currentV.x += acceleration * direction.x * dt * mult;
 	}
-	if (Keyboard::isKeyPressed(Keyboard::D))
+	if (Keyboard::isKeyPressed(RightKey))
 	{
 		direction.x = 1.f;
 
 		if (currentV.x < maxV)
 			currentV.x += acceleration * direction.x * dt * mult;
 	}
-	if (Keyboard::isKeyPressed(Keyboard::W))
+	if (Keyboard::isKeyPressed(UpKey))
 	{
 		direction.y = -1.f;
 
 		if (currentV.y > -maxV)
 			currentV.y += acceleration * direction.y * dt * mult;
 	}
-	if (Keyboard::isKeyPressed(Keyboard::S))
+	if (Keyboard::isKeyPressed(DownKey))
 	{
 		direction.y = 1.f;
 
@@ -172,7 +176,7 @@ void Player::Reset()
 	{
 		this->bullets.erase(bullets.begin() + i);
 	}
-	this->shape.setPosition(InitPos);
+	this->shape.setPosition(this->InitPos);
 }
 
 void Player::ResetVelocity()
@@ -194,7 +198,10 @@ void Player::Draw(RenderWindow & window)
 
 void Player::Update(RenderTarget &window, float dt)
 {
-	this->Movement(window, dt);
+	if (this->isLeft)
+		this->Movement(window, dt);
+	else
+		this->Movement(window, dt, Keyboard::Up, Keyboard::Down, Keyboard::Left, Keyboard::Right);
 
 	this->hpBar.setSize(Vector2f(20.f * this->HP, 5.f));
 	this->hpBar.setPosition(this->shape.getPosition().x, this->shape.getPosition().y - hpBar.getGlobalBounds().height - 10);
