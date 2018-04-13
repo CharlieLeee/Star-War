@@ -17,7 +17,7 @@ class Game
 public:
 	Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture *enemyText,
 		Texture *logoText, float shootLapse, Texture *backgroundMenu, Texture *explosionTex, 
-		Texture *movingBack, Texture *bomberTex, Texture *addBullet, Texture *addHP, Texture *bossTex);
+		Texture *movingBack, Texture *bomberTex, Texture *addBullet, Texture *addHP);
 	~Game();
 
 
@@ -58,6 +58,7 @@ public:
 	void PlayerBossCollision(Player &player);
 	void PlayerBulletBossCollision(Player &player);
 	void PlayerEbulletsCollision(Player &player);
+	void PlayerPlayerCollision(Player &playerA, Player &playerB, float dt);
 
 	void ExplosionUpdate(float speed, const float & dt, std::vector<Animation> &explosion);
 
@@ -67,9 +68,11 @@ public:
 
 	// Player
 	void ResetPlayer(Player &player);
-	void PlayerUpdate(const float & dt, Player &player, std::vector<Enemy> &enemies);
+	void PlayerUpdate(const float & dt, Player &player, std::vector<Enemy> &enemies, bool isTwo, Keyboard::Key Shooting);
 	void PlayerStateUpdate(Player &player);
 	void PlayerScoreUpdate(Player &player);
+
+	void TwoPlayerScoreUpdate(Player &playerA, Player &playerB);
 
 	void ClearPlayerBullets(Player &player);
 	void ClearEnemy(std::vector<Enemy> &enemies);
@@ -144,7 +147,9 @@ private:
 	bool havePickedBullet; // Used to control bullet buff time
 	bool pickedBulletBuff; // Used to display buff info
 	bool generateBoss; // Whether the boss has been generated
-	
+	// 2P is collide
+	bool isCollide;
+
 	//Boss
 	std::vector<Boss> boss;
 
@@ -230,6 +235,7 @@ private:
 
 	// Game over end score text
 	Text endScoreText;
+	Text twoPText;
 
 	// Credits texture
 	Texture creditsPic;
@@ -248,6 +254,8 @@ private:
 	float bulletBuffTimer;
 	float bulletBuffMax;
 	
+	// 2P collide timer
+	float collideTimer;
 
 	// Textbox
 	Textbox textbox;

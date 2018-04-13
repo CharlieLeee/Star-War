@@ -25,7 +25,7 @@ Background::Background(Texture *targetTex, RenderWindow *window)
 	this->movingBack2Shape.setScale(Vector2f(scale1, scale2));
 
 	this->movingBack1Shape.setPosition(0.f, 0.f);
-	//std::cout << this->movingBack1Shape.getPosition().x << std::endl;
+	//<< this->movingBack1Shape.getPosition().x << std::endl;
 	this->movingBack2Shape.setPosition(this->movingBack1Shape.getGlobalBounds().width, 0.f);
 	//std::cout << this->movingBack2Shape.getPosition().x << std::endl;
 }

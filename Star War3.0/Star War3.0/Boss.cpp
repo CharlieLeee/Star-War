@@ -3,19 +3,20 @@
 
 
 Boss::Boss(float speed, Texture *texture, int HP, Vector2u windowsize)
+	:texture(texture),
+	InitPos(windowsize.x + this->shape.getGlobalBounds().width, windowsize.y / 2),
+	HP(HP),
+	Center(texture->getSize().x / 2, texture->getSize().y / 2),
+	moveTimer(0.f),
+	mult(62.5f)
 {
-	this->texture = texture;
-	this->size = Vector2f(texture->getSize().x / 2, texture->getSize().y / 2);
 	this->shape.setTexture(*texture);
-	this->shape.setOrigin(size);
+	this->shape.setOrigin(Center);
 
-	this->InitPos = Vector2f(windowsize.x + this->shape.getGlobalBounds().width, windowsize.y / 2);
 	this->shape.setPosition(this->InitPos);
 	this->shape.setPosition(InitPos);
 	this->shape.setScale(0.5f, 0.5f);
-	this->HP = HP;
-
-	this->moveTimer = 0.f;
+	
 	this->mult = 62.5f;
 	this->enterScene = false;
 	this->speed = -speed;
@@ -35,7 +36,7 @@ Boss::~Boss()
 void Boss::Movement(RenderWindow * window, const float & dt)
 {
 	this->moveTimer += dt;
-	//std::cout << moveTimer << std::endl;
+	
 	if (this->shape.getPosition().x > window->getSize().x - this->shape.getGlobalBounds().width)
 	{
 		this->shape.move(-2.5 * dt * mult, 0.f);

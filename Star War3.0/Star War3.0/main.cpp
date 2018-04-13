@@ -45,7 +45,7 @@ int main()
 
 	// Init game
 	Game game(&window, &playerTex, &bulletTex, &enemyTex, &logoText,shootLapse,
-	&backgroundMenu, &explosion, &movingBack, &bomber, &addBullet, &addHP, &bossTex);
+	&backgroundMenu, &explosion, &movingBack, &bomber, &addBullet, &addHP);
 
 
 	// Clock

@@ -15,7 +15,7 @@ public:
 public:
 	Sprite shape;
 	Texture *texture;
-	Vector2f size;
+	Vector2f Center;
 	Vector2f InitPos;
 	Vector2u Texsize;
 

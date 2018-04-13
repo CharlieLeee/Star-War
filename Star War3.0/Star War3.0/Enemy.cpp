@@ -1,13 +1,12 @@
 #include "Enemy.h"
 
 Enemy::Enemy(Texture *texture, Vector2u windowSize, float maxV)
-{
-	this->acceleration = 0.7f;
-	this->drag = 0.1f;
-	this->maxV = maxV;
-	
-	this->currentV = Vector2f(0.f, 0.f);
-	
+	:acceleration(0.7f),
+	drag(0.1f),
+	maxV(maxV),
+	currentV(0.f, 0.f),
+	mult(62.5f)
+{	
 	this->bulletTimer = 0.f;
 	
 	this->HPMax = rand()%3 + 1;
@@ -22,12 +21,7 @@ Enemy::Enemy(Texture *texture, Vector2u windowSize, float maxV)
 
 	this->shape.setPosition(windowSize.x, rand()%this->range);
 	
-	this->mult = 62.5;
-
-	
-	this->ehp.setFillColor(Color::Red);
-	
-	
+	this->ehp.setFillColor(Color(32, 164, 212, 140));
 }
 
 Enemy::~Enemy(){}

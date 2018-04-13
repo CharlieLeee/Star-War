@@ -1,20 +1,17 @@
 #include "Player.h"
 
 Player::Player(RenderWindow	*window, Texture *texture, Texture *bulletTex, float _shootTimer, bool isLeft)
+: HPMax(5)
+, isLeft(isLeft)
+, score(0)
+, currentV(Vector2f(12.f, 0.f))
 {
 	{
 		// Init HP
-		this->HPMax = 5;
 		this->HP = this->HPMax;
 
 		// Init HP Bar
-		this->hpBar.setFillColor(Color::Magenta);
-
-		// Check player number
-		this->isLeft = isLeft;
-
-		// Init score
-		this->score = 0;
+		this->hpBar.setFillColor(Color(225, 15, 15, 220));
 
 		// Init properties
 		this->collideDamage = 1; // Collide damage
@@ -35,9 +32,9 @@ Player::Player(RenderWindow	*window, Texture *texture, Texture *bulletTex, float
 		
 
 		if (isLeft)
-			this->InitPos = Vector2f(0.f, 45.f);
+			this->InitPos = Vector2f(30.f, 45.f);
 		else
-			this->InitPos = Vector2f(window->getSize().x, 0.f);
+			this->InitPos = Vector2f(window->getSize().x, 45.f);
 
 		this->shape.setPosition(this->InitPos);
 		// Init bullet texture

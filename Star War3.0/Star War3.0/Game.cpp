@@ -4,7 +4,7 @@
 
 Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture *enemyText,
 	Texture *logoText, float shootLapse, Texture *backgroundMenu, Texture *explosionTex,
-	Texture *movingBack, Texture *bomberTex, Texture *addBullet, Texture *addHP, Texture *bossTex)
+	Texture *movingBack, Texture *bomberTex, Texture *addBullet, Texture *addHP)
 	:player(window, playerTex, bulletTex, shootLapse, true),
 	logo(logoText, Vector2u(40, 1), 0.01f, Vector2f(800.f, 800.f), Vector2f(window->getSize().x / 2 - 400.f,
 		window->getSize().y / 2 - 400.f)),
@@ -20,8 +20,9 @@ Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture
 	isHundred(false),
 	havePickedHP(false),
 	havePickedBullet(false),
-	pickedBulletBuff(false)
-
+	pickedBulletBuff(false),
+	isCollide(false),
+	collideTimer(0.f)
 {
 	// Init Buff
 	this->addBullet = addBullet;
@@ -143,6 +144,10 @@ Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture
 	this->endScoreText.setCharacterSize(30);
 	this->endScoreText.setFillColor(Color::Red);
 
+	this->twoPText.setFont(font);
+	this->twoPText.setCharacterSize(30);
+	this->twoPText.setFillColor(Color::Red);
+
 	// Background
 	this->backgroundSpeed = Vector2f(-3.f, 0.f);
 
@@ -169,7 +174,7 @@ void Game::Run()
 
 	while (this->window->isOpen())
 	{
-		std::cout << gameIsOver << std::endl;
+		//std::cout << gameIsOver << std::endl;
 		ProcessEvent();
 		deltaTime = clock.restart().asSeconds();
 		this->Update(deltaTime);
@@ -309,7 +314,7 @@ void Game::Update(float dt)
 			BuffUpdate(dt, player);
 
 			// Update player
-			PlayerUpdate(dt, player, enemies);
+			PlayerUpdate(dt, player, enemies, false, Keyboard::K);
 
 			// Update enemies movement & hp
 			EnemyUpdate(dt, enemies);
@@ -340,8 +345,10 @@ void Game::Update(float dt)
 			BuffUpdate(dt, playerB);
 
 			// Update player
-			PlayerUpdate(dt, playerA, enemies);
-			PlayerUpdate(dt, playerB, enemiesB);
+			PlayerUpdate(dt, playerA, enemies, true, Keyboard::Space);
+			PlayerUpdate(dt, playerB, enemiesB, true, Keyboard::RShift);
+			PlayerPlayerCollision(playerA, playerB, dt);
+			std::cout << bulletIndex << "\n";
 
 			// Update enemies movement & hp
 			EnemyUpdate(dt, enemies);
@@ -349,6 +356,8 @@ void Game::Update(float dt)
 
 			// Explosion Update
 			ExplosionUpdate(enemySpeed / 2, dt, explosion);
+			
+			TwoPlayerScoreUpdate(playerA, playerB);
 		}
 	}
 
@@ -453,9 +462,14 @@ void Game::Draw(float dt)
 			window->draw(score);
 		}
 
-		if (gameIsOver)
+		else if (gameIsOver && !isTwoPlayer)
 		{
 			window->draw(endScoreText);
+		}
+
+		else if (gameIsOver && isTwoPlayer)
+		{
+			window->draw(twoPText);
 		}
 	}
 
@@ -896,6 +910,26 @@ void Game::PlayerEbulletsCollision(Player & player)
 	}
 }
 
+void Game::PlayerPlayerCollision(Player & playerA, Player & playerB, float dt)
+{
+	collideTimer += dt;
+	if (Collision::PixelPerfectTest(playerA.shape, playerB.shape) && collideTimer > 0.2f)
+	{
+		isCollide = true;
+		collideTimer = 0.f;
+	}
+	if (isCollide)
+	{
+		playerA.HP--;
+		playerB.HP--;
+		eshotSound.play();
+		playerA.BounceOff();
+		playerB.BounceOff();
+		isCollide = false;
+	}
+				
+}
+
 void Game::ExplosionUpdate(float speed, const float & dt, std::vector<Animation> &explosion)
 {
 	for (size_t i = 0; i < explosion.size(); i++)
@@ -1157,13 +1191,13 @@ void Game::ResetPlayer(Player & player)
 	player.Reset();
 }
 
-void Game::PlayerUpdate(const float & dt, Player &player, std::vector<Enemy> &enemies)
+void Game::PlayerUpdate(const float & dt, Player &player, std::vector<Enemy> &enemies, bool isTwo, Keyboard::Key Shooting)
 {
 	// Player Update position
 	player.Update(*window, dt);
 
 	// Player shoot
-	if (Keyboard::isKeyPressed(Keyboard::K) && player.shootCnt > this->shootLapse)
+	if (Keyboard::isKeyPressed(Shooting) && player.shootCnt > this->shootLapse)
 	{
 		switch (havePickedBullet)
 		{
@@ -1198,8 +1232,8 @@ void Game::PlayerUpdate(const float & dt, Player &player, std::vector<Enemy> &en
 	PlayerEbulletsCollision(player);
 
 	PlayerScoreUpdate(player);
-
-	PlayerStateUpdate(player);
+	if (!isTwo)
+		PlayerStateUpdate(player);
 }
 
 void Game::PlayerStateUpdate(Player & player)
@@ -1224,6 +1258,20 @@ void Game::PlayerScoreUpdate(Player & player)
 {
 	// Update score
 	score.setString("SCORE: " + std::to_string(player.score));
+}
+
+void Game::TwoPlayerScoreUpdate(Player &playerA, Player &playerB)
+{
+	if (playerA.HP <= 0)
+	{
+		gameIsOver = true;
+		this->twoPText.setString("Right Player WON!!");
+	}
+	else if (playerB.HP <= 0)
+	{
+		gameIsOver = true;
+		this->twoPText.setString("Left Player WON!!");
+	}
 }
 
 void Game::TextboxUpdate()
