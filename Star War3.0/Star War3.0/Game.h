@@ -38,7 +38,7 @@ public:
 
 	// Index calculation
 	void CounterReset();
-	void CalculateIndex();
+	void CalculateIndex(int limit);
 
 	// Backgrounds
 	void BackgroundUpdate(const float &dt);

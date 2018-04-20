@@ -1,6 +1,6 @@
 #include "Bullet.h"
 
-Bullet::Bullet(Texture *texture, Vector2f pos, Vector2f maxV, Vector2f acceleration)
+Bullet::Bullet(Texture *texture, Vector2f pos, Vector2f maxV, Vector2f acceleration, bool isLeftPlayer)
 {
 	this->shape.setTexture(*texture);
 
@@ -12,14 +12,25 @@ Bullet::Bullet(Texture *texture, Vector2f pos, Vector2f maxV, Vector2f accelerat
 	this->acceleration = acceleration;
 
 	this->mult = 62.5f;
+	this->isLeftPlayer = isLeftPlayer;
 }
 
 
 void Bullet::Move(const float & dt)
 {
-	if (currentV.x < this->maxV.x)
+	if (isLeftPlayer)
 	{
-		currentV.x += acceleration.x * dt * mult;
+		if (currentV.x < this->maxV.x)
+		{
+			currentV.x += acceleration.x * dt * mult;
+		}
+	}
+	else
+	{
+		if (currentV.x > this->maxV.x)
+		{
+			currentV.x -= acceleration.x * dt * mult;
+		}
 	}
 
 	if (abs(currentV.y) < abs(this->maxV.y))

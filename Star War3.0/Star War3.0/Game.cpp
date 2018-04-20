@@ -45,7 +45,7 @@ Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture
 	this->window = window;
 
 	// Init fonts
-	this->font.loadFromFile("Fonts/Dosis-Light.ttf");
+	this->font.loadFromFile("Fonts/SF Atarian System Extended.ttf");
 
 	// Init logo
 	this->logoTex = logoText;
@@ -174,7 +174,6 @@ void Game::Run()
 
 	while (this->window->isOpen())
 	{
-		//std::cout << gameIsOver << std::endl;
 		ProcessEvent();
 		deltaTime = clock.restart().asSeconds();
 		this->Update(deltaTime);
@@ -208,8 +207,11 @@ void Game::ProcessEvent()
 			case Keyboard::Space:
 				if (gameIsOver && !isMenu)
 				{
+					if (isTwoPlayer)
+						isTwoPlayer = false;
 					isMenu = true;
 				}
+				
 				break;
 
 			case Keyboard::Return:
@@ -296,7 +298,7 @@ void Game::Update(float dt)
 		else if (!gameIsOver && !isTwoPlayer)// Game starts here
 		{
 			// Calculate Index
-			CalculateIndex();
+			CalculateIndex(30);
 
 			// Update background
 			BackgroundUpdate(dt);
@@ -328,8 +330,8 @@ void Game::Update(float dt)
 		else if (!gameIsOver && isTwoPlayer)
 		{
 			// Calculate Index
-			CalculateIndex();
-
+			CalculateIndex(60);
+			
 			// Update background
 			BackgroundUpdate(dt);
 
@@ -348,7 +350,6 @@ void Game::Update(float dt)
 			PlayerUpdate(dt, playerA, enemies, true, Keyboard::Space);
 			PlayerUpdate(dt, playerB, enemiesB, true, Keyboard::RShift);
 			PlayerPlayerCollision(playerA, playerB, dt);
-			std::cout << bulletIndex << "\n";
 
 			// Update enemies movement & hp
 			EnemyUpdate(dt, enemies);
@@ -622,27 +623,27 @@ void Game::CounterReset()
 }
 
 // Use counter to calculate starting index(length 30)
-void Game::CalculateIndex()
+void Game::CalculateIndex(int limit)
 {
-	if (enemyCnt <= 30)
+	if (enemyCnt <= limit)
 		enemyIndex = 0;
 	else
-		enemyIndex = enemyCnt - 30;
+		enemyIndex = enemyCnt - limit;
 
-	if (bulletCnt <= 30)
+	if (bulletCnt <= limit)
 		bulletIndex = 0;
 	else
-		bulletIndex = bulletCnt - 30;
+		bulletIndex = bulletCnt - limit;
 
-	if (ebulletCnt <= 30)
+	if (ebulletCnt <= limit)
 		ebulletIndex = 0;
 	else
-		ebulletIndex = ebulletCnt - 30;
+		ebulletIndex = ebulletCnt - limit;
 
-	if (bomberCnt <= 30)
+	if (bomberCnt <= limit)
 		bomberIndex = 0;
 	else
-		bomberIndex = bomberCnt - 30;
+		bomberIndex = bomberCnt - limit;
 }
 
 void Game::BackgroundUpdate(const float & dt)
@@ -1032,7 +1033,8 @@ void Game::HPBuffUpdate(const float &dt, Player &player)
 	{
 		if (BuffHP[i].shape.getGlobalBounds().intersects(player.shape.getGlobalBounds()))
 		{
-			player.HP++;
+			if (player.HP < player.HPMax)
+				player.HP++;
 
 			havePickedHP = true;
 

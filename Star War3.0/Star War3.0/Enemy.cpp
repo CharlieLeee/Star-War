@@ -20,7 +20,9 @@ Enemy::Enemy(Texture *texture, Vector2u windowSize, float maxV)
 	this->range = windowSize.y - this->shape.getGlobalBounds().height;
 
 	this->shape.setPosition(windowSize.x, rand()%this->range);
-	
+
+	this->ehpBack.setSize(Vector2f(this->HPMax * 20.f, 5.f));
+	this->ehpBack.setFillColor(Color(159, 159, 159, 120));
 	this->ehp.setFillColor(Color(32, 164, 212, 140));
 }
 
@@ -28,10 +30,11 @@ Enemy::~Enemy(){}
 
 void Enemy::UpdateHP()
 {
+	this->ehpBack.setPosition(this->shape.getPosition().x, this->shape.getPosition().y - ehp.getGlobalBounds().height);
+
 	this->ehp.setSize(Vector2f(this->HP * 20.f, 5.f));
 
 	this->ehp.setPosition(this->shape.getPosition().x, this->shape.getPosition().y - ehp.getGlobalBounds().height);
-
 }
 
 void Enemy::Move(float dt)
@@ -63,6 +66,8 @@ void Enemy::Draw(RenderWindow & window)
 {
 	// Draw enemy sprite
 	window.draw(this->shape);
+
+	window.draw(this->ehpBack);
 	// Draw HP bar
 	window.draw(this->ehp);
 }

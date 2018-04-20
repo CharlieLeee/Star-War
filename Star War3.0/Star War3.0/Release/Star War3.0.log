@@ -1,9 +1,11 @@
 ﻿D:\Visual Studio\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(391,5): warning MSB8028: The intermediate directory (Release\) contains files shared from another project (Star War3.0.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  Game.cpp
-d:\05development\sfml repo\star-war\star war3.0\star war3.0\game.cpp(15): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
+  Boss.cpp
+d:\05development\sfml repo\star-war\star war3.0\star war3.0\boss.cpp(9): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
+d:\05development\sfml repo\star-war\star war3.0\star war3.0\boss.cpp(7): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
+d:\05development\sfml repo\star-war\star war3.0\star war3.0\boss.cpp(42): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
      Creating library D:\05Development\SFML Repo\Star-War\Star War3.0\Release\Star Wars3.0.lib and object D:\05Development\SFML Repo\Star-War\Star War3.0\Release\Star Wars3.0.exp
   Generating code
-  2 of 908 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
+  3 of 927 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     1 functions had inline decision re-evaluated but remain unchanged
   Finished generating code

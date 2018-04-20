@@ -1,10 +1,10 @@
 #include "Player.h"
 
 Player::Player(RenderWindow	*window, Texture *texture, Texture *bulletTex, float _shootTimer, bool isLeft)
-: HPMax(5)
-, isLeft(isLeft)
-, score(0)
-, currentV(Vector2f(12.f, 0.f))
+	: HPMax(5)
+	, isLeft(isLeft)
+	, score(0)
+	, currentV(Vector2f(12.f, 0.f))
 {
 	{
 		// Init HP
@@ -12,7 +12,7 @@ Player::Player(RenderWindow	*window, Texture *texture, Texture *bulletTex, float
 
 		// Init HP Bar
 		this->hpBar.setFillColor(Color(225, 15, 15, 220));
-
+		this->hpBack.setFillColor(Color(159, 159, 159, 120));
 		// Init properties
 		this->collideDamage = 1; // Collide damage
 		this->maxV = 10.f; // Player max moving speed 
@@ -29,7 +29,7 @@ Player::Player(RenderWindow	*window, Texture *texture, Texture *bulletTex, float
 		this->shape.setTexture(*texture);
 
 		// Set initial position
-		
+
 
 		if (isLeft)
 			this->InitPos = Vector2f(30.f, 45.f);
@@ -62,15 +62,31 @@ void Player::shoot(Vector2f speed, Vector2f accelerationType)
 	Vector2f offset(10.f, 20.f);
 	Vector2f upOffset(10.f, 78.f);
 	Vector2f center(10.f, 49.f);
-	if (accelerationType.y != 0.f)
+	if (isLeft)
 	{
-		this->bullets.push_back(Bullet(bulletTex, this->shape.getPosition() + upOffset, speed, accelerationType));
-		this->bullets.push_back(Bullet(bulletTex, this->shape.getPosition() + offset, speed, Vector2f(accelerationType.x, -accelerationType.y)));
+		if (accelerationType.y != 0.f)
+		{
+			this->bullets.push_back(Bullet(bulletTex, this->shape.getPosition() + upOffset, speed, accelerationType, isLeft));
+			this->bullets.push_back(Bullet(bulletTex, this->shape.getPosition() + offset, speed, Vector2f(accelerationType.x, -accelerationType.y), isLeft));
+		}
+		else
+		{
+			this->bullets.push_back(Bullet(bulletTex, this->shape.getPosition() + center, speed, accelerationType, isLeft));
+		}
 	}
 	else
 	{
-		this->bullets.push_back(Bullet(bulletTex, this->shape.getPosition() + center, speed, accelerationType));
+		if (accelerationType.y != 0.f)
+		{
+			this->bullets.push_back(Bullet(bulletTex, this->shape.getPosition() + upOffset, -speed, accelerationType, isLeft));
+			this->bullets.push_back(Bullet(bulletTex, this->shape.getPosition() + offset, -speed, Vector2f(accelerationType.x, -accelerationType.y), isLeft));
+		}
+		else
+		{
+			this->bullets.push_back(Bullet(bulletTex, this->shape.getPosition() + center, -speed, accelerationType, isLeft));
+		}
 	}
+
 	this->shootTimer = 0; // Reset timer
 }
 
@@ -190,6 +206,7 @@ void Player::BounceOff()
 void Player::Draw(RenderWindow & window)
 {
 	window.draw(this->shape);
+	window.draw(this->hpBack);
 	window.draw(this->hpBar);
 }
 
@@ -202,5 +219,8 @@ void Player::Update(RenderTarget &window, float dt)
 
 	this->hpBar.setSize(Vector2f(20.f * this->HP, 5.f));
 	this->hpBar.setPosition(this->shape.getPosition().x, this->shape.getPosition().y - hpBar.getGlobalBounds().height - 10);
+	
+	this->hpBack.setSize(Vector2f(20.f * this->HPMax, 5.f));
+	this->hpBack.setPosition(this->shape.getPosition().x, this->shape.getPosition().y - hpBar.getGlobalBounds().height - 10);
 }
 

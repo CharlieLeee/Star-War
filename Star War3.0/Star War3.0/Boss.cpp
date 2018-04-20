@@ -4,7 +4,7 @@
 
 Boss::Boss(float speed, Texture *texture, int HP, Vector2u windowsize)
 	:texture(texture),
-	InitPos(windowsize.x + this->shape.getGlobalBounds().width, windowsize.y / 2),
+	InitPos(windowsize.x + 280.f, windowsize.y / 2),
 	HP(HP),
 	Center(texture->getSize().x / 2, texture->getSize().y / 2),
 	moveTimer(0.f),
@@ -24,7 +24,8 @@ Boss::Boss(float speed, Texture *texture, int HP, Vector2u windowsize)
 	this->shootTimerMax = 1.5f;
 
 	// Boss hp bar
-	// Init HP Bar
+	this->bossHPBack.setFillColor(Color(159, 159, 159, 120));
+	this->bossHPBack.setSize(Vector2f(5.f, 20.f * this->HP));
 	this->bossHP.setFillColor(Color::Blue);
 }
 
@@ -57,10 +58,12 @@ void Boss::Update(RenderWindow *window, const float & dt)
 	this->Movement(window, dt);
 	this->bossHP.setSize(Vector2f(5.f, 20.f * this->HP));
 	this->bossHP.setPosition(this->shape.getPosition().x + 240.f, this->shape.getPosition().y - this->shape.getGlobalBounds().height / 2);
+	this->bossHPBack.setPosition(this->shape.getPosition().x + 240.f, this->shape.getPosition().y - this->shape.getGlobalBounds().height / 2);
 }
 
 void Boss::Draw(RenderWindow *window)
 {
 	window->draw(this->shape);
+	window->draw(this->bossHPBack);
 	window->draw(this->bossHP);
 }

@@ -15,7 +15,7 @@ class Bullet
 {
 public:
 	Sprite shape;
-	Bullet(Texture *texture, Vector2f pos, Vector2f maxV, Vector2f acceleration);
+	Bullet(Texture *texture, Vector2f pos, Vector2f maxV, Vector2f acceleration, bool isLeftPlayer);
 	~Bullet();
 
 	void Move(const float &dt);
@@ -25,5 +25,6 @@ private:
 	Vector2f maxV;
 	Vector2f currentV;
 	Vector2f acceleration;
+	bool isLeftPlayer;
 };
 

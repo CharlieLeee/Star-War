@@ -19,6 +19,7 @@ public:
 	
 	// EHP Bar	
 	RectangleShape ehp;
+	RectangleShape ehpBack;
 
 	// Enemy Texture
 	Sprite shape;

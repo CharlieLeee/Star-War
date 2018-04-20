@@ -11,7 +11,12 @@ public:
 	void Movement(RenderWindow *window, const float &dt);
 	void Update(RenderWindow *window, const float &dt);
 	void Draw(RenderWindow *window);
-
+	inline bool IsInScene(RenderWindow *window)
+	{
+		if (this->shape.getPosition().x + this->shape.getGlobalBounds().width < window->getSize().x)
+			return true;
+		return false;
+	}
 public:
 	Sprite shape;
 	Texture *texture;
@@ -29,14 +34,6 @@ public:
 	bool enterScene;
 	float speed;
 	RectangleShape bossHP;
-
-	inline bool IsInScene(RenderWindow *window)
-	{
-		if (this->shape.getPosition().x + this->shape.getGlobalBounds().width < window->getSize().x)
-			return true;
-		return false;
-	}
-
-
+	RectangleShape bossHPBack;
 };
 

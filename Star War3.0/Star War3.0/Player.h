@@ -44,6 +44,7 @@ public:
 
 	// HP Bar
 	RectangleShape hpBar;
+	RectangleShape hpBack;
 
 	// Initial position
 	Vector2f InitPos;
