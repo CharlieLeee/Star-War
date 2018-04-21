@@ -59,6 +59,7 @@ public:
 	void PlayerBulletBossCollision(Player &player);
 	void PlayerEbulletsCollision(Player &player);
 	void PlayerPlayerCollision(Player &playerA, Player &playerB, float dt);
+	void PBulletPlayerCollision(Player &playerMain, Player &oppPlayer);
 
 	void ExplosionUpdate(float speed, const float & dt, std::vector<Animation> &explosion);
 
@@ -68,7 +69,7 @@ public:
 
 	// Player
 	void ResetPlayer(Player &player);
-	void PlayerUpdate(const float & dt, Player &player, std::vector<Enemy> &enemies, bool isTwo, Keyboard::Key Shooting);
+	void PlayerUpdate(const float & dt, Player &player, std::vector<Enemy> &enemies, bool isTwo, Keyboard::Key Shooting, Player *oppPlayer = nullptr);
 	void PlayerStateUpdate(Player &player);
 	void PlayerScoreUpdate(Player &player);
 
@@ -139,6 +140,7 @@ private:
 	float mult;
 
 	// States
+	bool isLOGO;
 	bool gameIsOver;
 	bool isMenu;
 	bool isDrawCredits;

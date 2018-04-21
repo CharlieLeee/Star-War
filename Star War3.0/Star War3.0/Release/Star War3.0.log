@@ -5,7 +5,7 @@ d:\05development\sfml repo\star-war\star war3.0\star war3.0\boss.cpp(7): warning
 d:\05development\sfml repo\star-war\star war3.0\star war3.0\boss.cpp(42): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
      Creating library D:\05Development\SFML Repo\Star-War\Star War3.0\Release\Star Wars3.0.lib and object D:\05Development\SFML Repo\Star-War\Star War3.0\Release\Star Wars3.0.exp
   Generating code
-  3 of 927 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
+  4 of 928 functions ( 0.4%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     1 functions had inline decision re-evaluated but remain unchanged
   Finished generating code

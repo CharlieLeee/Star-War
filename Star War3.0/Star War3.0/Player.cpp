@@ -7,6 +7,12 @@ Player::Player(RenderWindow	*window, Texture *texture, Texture *bulletTex, float
 	, currentV(Vector2f(12.f, 0.f))
 {
 	{
+		// Init orient
+		if (this->isLeft)
+			orient = 1;
+		else
+			orient = -1;
+
 		// Init HP
 		this->HP = this->HPMax;
 
@@ -31,7 +37,7 @@ Player::Player(RenderWindow	*window, Texture *texture, Texture *bulletTex, float
 		// Set initial position
 
 
-		if (isLeft)
+		if (this->isLeft)
 			this->InitPos = Vector2f(30.f, 45.f);
 		else
 			this->InitPos = Vector2f(window->getSize().x, 45.f);
@@ -40,7 +46,7 @@ Player::Player(RenderWindow	*window, Texture *texture, Texture *bulletTex, float
 		// Init bullet texture
 		this->bulletTex = bulletTex;
 
-		if (isLeft)
+		if (this->isLeft)
 			this->shape.setScale(0.15f, 0.15f);
 		else
 			this->shape.setScale(-0.15f, 0.15f);
@@ -62,6 +68,7 @@ void Player::shoot(Vector2f speed, Vector2f accelerationType)
 	Vector2f offset(10.f, 20.f);
 	Vector2f upOffset(10.f, 78.f);
 	Vector2f center(10.f, 49.f);
+	Vector2f rightOffset(-10.f, 10.f); // For right player
 	if (isLeft)
 	{
 		if (accelerationType.y != 0.f)
@@ -83,7 +90,7 @@ void Player::shoot(Vector2f speed, Vector2f accelerationType)
 		}
 		else
 		{
-			this->bullets.push_back(Bullet(bulletTex, this->shape.getPosition() + center, -speed, accelerationType, isLeft));
+			this->bullets.push_back(Bullet(bulletTex, this->shape.getPosition() + center + rightOffset, -speed, accelerationType, isLeft));
 		}
 	}
 
@@ -212,15 +219,16 @@ void Player::Draw(RenderWindow & window)
 
 void Player::Update(RenderTarget &window, float dt)
 {
+	
 	if (this->isLeft)
 		this->Movement(window, dt);
 	else
 		this->Movement(window, dt, Keyboard::Up, Keyboard::Down, Keyboard::Left, Keyboard::Right);
 
-	this->hpBar.setSize(Vector2f(20.f * this->HP, 5.f));
+	this->hpBar.setSize(Vector2f(orient * 20.f * this->HP, 5.f));
 	this->hpBar.setPosition(this->shape.getPosition().x, this->shape.getPosition().y - hpBar.getGlobalBounds().height - 10);
 	
-	this->hpBack.setSize(Vector2f(20.f * this->HPMax, 5.f));
+	this->hpBack.setSize(Vector2f(orient * 20.f * this->HPMax, 5.f));
 	this->hpBack.setPosition(this->shape.getPosition().x, this->shape.getPosition().y - hpBar.getGlobalBounds().height - 10);
 }
 

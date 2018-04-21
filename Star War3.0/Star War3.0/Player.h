@@ -7,6 +7,9 @@ public:
 	Player(RenderWindow *window, Texture *texture, Texture *bulletTex, float _shootTimer, bool isLeft);
 	~Player();
 
+	// Orient 1 / -1
+	int orient;
+
 	// Player Sprite
 	Sprite shape;
 	Texture* texture;

@@ -55,7 +55,7 @@ void Bomber::Move(float speed, const float & deltaTime, Vector2f playerPos, Rend
 		}
 		else
 		{
-			this->shape.move(-2.7f * speed * deltaTime * mult, 5 * sin((this->shape.getPosition().x / 50)));
+			this->shape.move(-2.7f * speed * deltaTime * mult, 5 * deltaTime * mult * sin((this->shape.getPosition().x / 50)));
 		}
 
 		this->shape.setRotation(5 * cos((this->shape.getPosition().x / 50)));

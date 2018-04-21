@@ -22,7 +22,8 @@ Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture
 	havePickedBullet(false),
 	pickedBulletBuff(false),
 	isCollide(false),
-	collideTimer(0.f)
+	collideTimer(0.f),
+	isLOGO(true)
 {
 	// Init Buff
 	this->addBullet = addBullet;
@@ -215,7 +216,7 @@ void Game::ProcessEvent()
 				break;
 
 			case Keyboard::Return:
-				if (gameIsOver)
+				if (gameIsOver && !isLOGO)
 				{
 					switch (menu.GetLine())
 					{
@@ -246,7 +247,7 @@ void Game::ProcessEvent()
 			}
 			break;
 		case Event::KeyReleased:
-			if (this->isMenu && !isDrawCredits)
+			if (this->isMenu && !isDrawCredits && !isLOGO)
 			{
 				if (event.key.code == Keyboard::S)
 				{
@@ -347,8 +348,8 @@ void Game::Update(float dt)
 			BuffUpdate(dt, playerB);
 
 			// Update player
-			PlayerUpdate(dt, playerA, enemies, true, Keyboard::Space);
-			PlayerUpdate(dt, playerB, enemiesB, true, Keyboard::RShift);
+			PlayerUpdate(dt, playerA, enemies, true, Keyboard::Space, &playerB);
+			PlayerUpdate(dt, playerB, enemiesB, true, Keyboard::RShift, &playerA);
 			PlayerPlayerCollision(playerA, playerB, dt);
 
 			// Update enemies movement & hp
@@ -375,6 +376,7 @@ void Game::Draw(float dt)
 		{
 			if (logoCnt > logoDisplayMax)
 			{
+				isLOGO = false;
 				DrawMenu(this->window);
 			}
 			else
@@ -1193,7 +1195,7 @@ void Game::ResetPlayer(Player & player)
 	player.Reset();
 }
 
-void Game::PlayerUpdate(const float & dt, Player &player, std::vector<Enemy> &enemies, bool isTwo, Keyboard::Key Shooting)
+void Game::PlayerUpdate(const float & dt, Player &player, std::vector<Enemy> &enemies, bool isTwo, Keyboard::Key Shooting, Player *oppPlayer)
 {
 	// Player Update position
 	player.Update(*window, dt);
@@ -1233,6 +1235,11 @@ void Game::PlayerUpdate(const float & dt, Player &player, std::vector<Enemy> &en
 	//Player & Ebullets collision
 	PlayerEbulletsCollision(player);
 
+	if (oppPlayer != nullptr)
+	{
+		PBulletPlayerCollision(player, *oppPlayer);
+	}
+
 	PlayerScoreUpdate(player);
 	if (!isTwo)
 		PlayerStateUpdate(player);
@@ -1260,6 +1267,21 @@ void Game::PlayerScoreUpdate(Player & player)
 {
 	// Update score
 	score.setString("SCORE: " + std::to_string(player.score));
+}
+
+void Game::PBulletPlayerCollision(Player &playerMain, Player &oppPlayer)
+{
+	for (size_t i = bulletIndex; i < playerMain.bullets.size(); i++)
+	{
+		if (playerMain.bullets[i].shape.getGlobalBounds().intersects(oppPlayer.shape.getGlobalBounds()))
+		{
+			oppPlayer.HP--;
+			eshotSound.play();
+			if (!gameIsOver)
+				playerMain.score += 5;
+			playerMain.bullets.erase(playerMain.bullets.begin() + i);
+		}
+	}
 }
 
 void Game::TwoPlayerScoreUpdate(Player &playerA, Player &playerB)

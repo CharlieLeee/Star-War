@@ -17,7 +17,6 @@ Boss::Boss(float speed, Texture *texture, int HP, Vector2u windowsize)
 	this->shape.setPosition(InitPos);
 	this->shape.setScale(0.5f, 0.5f);
 	
-	this->mult = 62.5f;
 	this->enterScene = false;
 	this->speed = -speed;
 	this->shootTimer = 0.f;
