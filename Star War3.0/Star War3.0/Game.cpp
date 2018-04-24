@@ -23,7 +23,10 @@ Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture
 	pickedBulletBuff(false),
 	isCollide(false),
 	collideTimer(0.f),
-	isLOGO(true)
+	isLOGO(true),
+	spawnCnt(0.f),
+	spawnCntA(0.f),
+	spawnCntB(0.f)
 {
 	// Init Buff
 	this->addBullet = addBullet;
@@ -62,10 +65,9 @@ Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture
 
 	// Init enemy
 	this->enemySpeed = 10.f;
-	this->enemies.push_back(Enemy(&enemyTex, this->window->getSize(), enemySpeed));
+	//this->enemies.push_back(Enemy(&enemyTex, this->window->getSize(), enemySpeed));
 	this->enemy_bul_speed = 20.f;
 	this->spawnLapse = 1.2f;
-	this->spawnCnt = 0.f;
 	this->enemyAcceleration = Vector2f(-1.0f, 0.f);
 	this->eRegularDir = Vector2f(-1.f, 0.f);
 
@@ -212,7 +214,7 @@ void Game::ProcessEvent()
 						isTwoPlayer = false;
 					isMenu = true;
 				}
-				
+
 				break;
 
 			case Keyboard::Return:
@@ -320,7 +322,7 @@ void Game::Update(float dt)
 			PlayerUpdate(dt, player, enemies, false, Keyboard::K);
 
 			// Update enemies movement & hp
-			EnemyUpdate(dt, enemies);
+			EnemyUpdate(dt, this->spawnCnt, enemies, true);
 
 			// Bomber update
 			BomberUpdate(dt, player);
@@ -332,7 +334,7 @@ void Game::Update(float dt)
 		{
 			// Calculate Index
 			CalculateIndex(60);
-			
+
 			// Update background
 			BackgroundUpdate(dt);
 
@@ -348,17 +350,17 @@ void Game::Update(float dt)
 			BuffUpdate(dt, playerB);
 
 			// Update player
-			PlayerUpdate(dt, playerA, enemies, true, Keyboard::Space, &playerB);
+			PlayerUpdate(dt, playerA, enemiesA, true, Keyboard::Space, &playerB);
 			PlayerUpdate(dt, playerB, enemiesB, true, Keyboard::RShift, &playerA);
 			PlayerPlayerCollision(playerA, playerB, dt);
 
 			// Update enemies movement & hp
-			EnemyUpdate(dt, enemies);
-			EnemyUpdate(dt, enemiesB);
+			EnemyUpdate(dt, spawnCntA, enemiesA, true);
+			EnemyUpdate(dt, spawnCntB, enemiesB, false);
 
 			// Explosion Update
 			ExplosionUpdate(enemySpeed / 2, dt, explosion);
-			
+
 			TwoPlayerScoreUpdate(playerA, playerB);
 		}
 	}
@@ -444,7 +446,7 @@ void Game::Draw(float dt)
 			DrawPlayer(this->window, playerB);
 
 			// Enemy
-			DrawEnemies(this->window, enemies);
+			DrawEnemies(this->window, enemiesA);
 			DrawEnemies(this->window, enemiesB);
 
 			// Draw enemy bullets
@@ -485,17 +487,17 @@ void Game::PlayerTimerUpdate(const float & dt, Player &player)
 		player.shootCnt += dt;
 }
 
-void Game::EnemyTimerUpdate(const float & dt, std::vector<Enemy> &enemies)
+void Game::EnemyTimerUpdate(float &spawnCnt, const float & dt, std::vector<Enemy> &enemies, bool toRight)
 {
 	// Update enemy spawn lapse
-	if (this->spawnCnt < this->spawnLapse)
+	if (spawnCnt < this->spawnLapse)
 		spawnCnt += dt;
 
 	// Spawn enemies when it's time
-	if (spawnCnt > spawnLapse)
+	if (spawnCnt > this->spawnLapse)
 	{
-		enemies.push_back(Enemy(&enemyTex, window->getSize(), enemySpeed));
-		spawnCnt -= spawnLapse;
+		enemies.push_back(Enemy(&enemyTex, window->getSize(), enemySpeed, toRight));
+		spawnCnt -= this->spawnLapse;
 		enemyCnt++;
 	}
 
@@ -653,11 +655,8 @@ void Game::BackgroundUpdate(const float & dt)
 	moving.UpdateMovingBack(this->window, dt, Vector2f(backgroundSpeed.x - abs(player.currentV.x) / 4, 0.f));
 }
 
-void Game::GenerateEnemyBullet(const float &dt, std::vector<Enemy> &enemies)
+void Game::GenerateEnemyBullet(const float &dt, std::vector<Enemy> &enemies, bool toRight)
 {
-	// Timer
-	EnemyTimerUpdate(dt, enemies);
-
 	// Enemy bullets generate
 	for (size_t i = enemyIndex; i < enemies.size(); i++)
 	{
@@ -676,7 +675,7 @@ void Game::GenerateEnemyBullet(const float &dt, std::vector<Enemy> &enemies)
 	}
 }
 
-void Game::EbulletsMovement(const float & dt, std::vector<Enemy> &enemies)
+void Game::EbulletsMovement(const float & dt, std::vector<Enemy> &enemies, bool toRight)
 {
 	for (size_t i = ebulletIndex; i < ebullets.size(); i++)
 	{
@@ -684,10 +683,10 @@ void Game::EbulletsMovement(const float & dt, std::vector<Enemy> &enemies)
 	}
 }
 
-void Game::EbulletsUpdate(const float & dt, std::vector<Enemy> &enemies)
+void Game::EbulletsUpdate(const float & dt, std::vector<Enemy> &enemies, bool toRight)
 {
-	this->GenerateEnemyBullet(dt, enemies);
-	this->EbulletsMovement(dt, enemies);
+	this->GenerateEnemyBullet(dt, enemies, toRight);
+	this->EbulletsMovement(dt, enemies, toRight);
 }
 
 void Game::BomberUpdate(const float &dt, Player &player)
@@ -930,7 +929,7 @@ void Game::PlayerPlayerCollision(Player & playerA, Player & playerB, float dt)
 		playerB.BounceOff();
 		isCollide = false;
 	}
-				
+
 }
 
 void Game::ExplosionUpdate(float speed, const float & dt, std::vector<Animation> &explosion)
@@ -1179,15 +1178,18 @@ void Game::ResetEnemy()
 	this->spawnLapse = 2.1f;
 }
 
-void Game::EnemyUpdate(const float & dt, std::vector<Enemy> &enemies)
+void Game::EnemyUpdate(const float & dt, float &spawnCnt, std::vector<Enemy> &enemies, bool toRight)
 {
+	// Timer
+	EnemyTimerUpdate(spawnCnt, dt, enemies, toRight);
+
 	for (size_t i = enemyIndex; i < enemies.size(); i++)
 	{
 		enemies[i].Update(dt);
 	}
 
 	// Update ebullets
-	EbulletsUpdate(dt, enemies);
+	EbulletsUpdate(dt, enemies, toRight);
 }
 
 void Game::ResetPlayer(Player & player)

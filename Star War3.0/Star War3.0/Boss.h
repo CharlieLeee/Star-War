@@ -31,7 +31,6 @@ public:
 	float shootTimerMax;
 	float moveTimer;
 	float mult;
-	bool enterScene;
 	float speed;
 	RectangleShape bossHP;
 	RectangleShape bossHPBack;

@@ -17,7 +17,6 @@ Boss::Boss(float speed, Texture *texture, int HP, Vector2u windowsize)
 	this->shape.setPosition(InitPos);
 	this->shape.setScale(0.5f, 0.5f);
 	
-	this->enterScene = false;
 	this->speed = -speed;
 	this->shootTimer = 0.f;
 	this->shootTimerMax = 1.5f;
@@ -43,7 +42,7 @@ void Boss::Movement(RenderWindow * window, const float & dt)
 	}
 	else
 	{
-		this->shape.move(speed, 3 * sin(this->moveTimer) * dt * mult);
+		this->shape.move(speed * dt * mult, 3 * sin(this->moveTimer) * dt * mult);
 	}
 
 	if (this->shape.getPosition().x < window->getSize().x / 2)

@@ -25,7 +25,7 @@ public:
 	Sprite shape;
 	Texture *texture;
 	
-	Enemy(Texture *texture, Vector2u windowSize, float maxV);
+	Enemy(Texture *texture, Vector2u windowSize, float maxV, bool toRight);
 
 	~Enemy();
 
@@ -35,6 +35,7 @@ public:
 	void Update(float dt);
 
 private:
+	int orient; // Default 1, toLeft -1, as a multiplier
 	float acceleration;
 	float drag;
 	Vector2f currentV;

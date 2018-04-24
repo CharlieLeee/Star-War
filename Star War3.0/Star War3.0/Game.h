@@ -26,7 +26,7 @@ public:
 
 	// Timers
 	void PlayerTimerUpdate(const float &dt, Player &player);
-	void EnemyTimerUpdate(const float & dt, std::vector<Enemy> &enemies);
+	void EnemyTimerUpdate(float &spawnCnt, const float & dt, std::vector<Enemy> &enemies, bool toRight);
 	void BomberTimerUpdate(const float &dt);
 	void BuffTimerUpdate(const float &dt);
 	void BossTimerUpdate(const float &dt);
@@ -44,9 +44,9 @@ public:
 	void BackgroundUpdate(const float &dt);
 	
 	// EBullets
-	void GenerateEnemyBullet(const float &dt, std::vector<Enemy> &enemies);
-	void EbulletsMovement(const float &dt, std::vector<Enemy> &enemies);
-	void EbulletsUpdate(const float &dt, std::vector<Enemy> &enemies);
+	void GenerateEnemyBullet(const float &dt, std::vector<Enemy> &enemies, bool toRight);
+	void EbulletsMovement(const float &dt, std::vector<Enemy> &enemies, bool toRight);
+	void EbulletsUpdate(const float &dt, std::vector<Enemy> &enemies, bool toRight);
 
 	// Bomber
 	void BomberUpdate(const float &dt, Player &player);
@@ -65,7 +65,7 @@ public:
 
 	// Enemy
 	void ResetEnemy();
-	void EnemyUpdate(const float &dt, std::vector<Enemy> &enemies);
+	void EnemyUpdate(const float &dt, float &spawnCnt, std::vector<Enemy> &enemies, bool toRight);
 
 	// Player
 	void ResetPlayer(Player &player);
@@ -151,6 +151,8 @@ private:
 	bool generateBoss; // Whether the boss has been generated
 	// 2P is collide
 	bool isCollide;
+	float spawnCntA;
+	float spawnCntB;
 
 	//Boss
 	std::vector<Boss> boss;
@@ -163,6 +165,7 @@ private:
 	float spawnLapse;
 	float enemySpeed;
 	std::vector<Enemy> enemies;
+	std::vector<Enemy> enemiesA;
 	std::vector<Enemy> enemiesB;
 	Vector2f enemyAcceleration;
 	Vector2f enemyBulletSpeed;

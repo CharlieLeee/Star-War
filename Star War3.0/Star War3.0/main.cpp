@@ -7,7 +7,11 @@ int main()
 	srand(time(NULL));
 	// Init window
 	RenderWindow window(VideoMode(1920, 1080), "Star War v3.0", Style::Fullscreen);
-
+	
+	sf::Image icon;
+	icon.loadFromFile("Textures/icon.png");
+	window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+	
 	// Init textures
 	Texture playerTex;
 	playerTex.loadFromFile("Textures/ship1.png");
