@@ -45,7 +45,7 @@ public:
 	
 	// EBullets
 	void GenerateEnemyBullet(const float &dt, std::vector<Enemy> &enemies, bool toRight, int ID);
-	void EbulletsMovement(const float &dt, std::vector<Enemy> &enemies, bool toRight);
+	void EbulletsMovement(const float &dt, std::vector<Enemy> &enemies, bool toRight, int ID);
 	void EbulletsUpdate(const float &dt, std::vector<Enemy> &enemies, bool toRight, int ID);
 
 	// Bomber

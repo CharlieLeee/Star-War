@@ -3,7 +3,7 @@
 
 
 eBullets::eBullets(Texture *texture, Vector2f pos, Vector2f direction, int ownerID)
-: ownerID(ownerID)
+	: ownerID(ownerID)
 {
 	this->shape.setTexture(*texture);
 
@@ -18,12 +18,15 @@ eBullets::~eBullets()
 {
 }
 
-void eBullets::Move(float speed, const float & dt)
+void eBullets::Move(float speed, const float & dt, int ID)
 {
-	this->shape.move(this->direction.x * speed * dt * mult, this->direction.y * speed * dt * mult);
-	if (this->direction.x != 0.f && this->direction.y != 0.f)
+	if (this ->ownerID == ID)
 	{
-		this->shape.setRotation(180.f + atan2(this->direction.y, this->direction.x) * 180 / 3.14159265359);
+		this->shape.move(this->direction.x * speed * dt * mult, this->direction.y * speed * dt * mult);
+		if (this->direction.x != 0.f && this->direction.y != 0.f)
+		{
+			this->shape.setRotation(180.f + atan2(this->direction.y, this->direction.x) * 180 / 3.14159265359);
+		}
 	}
 }
 

@@ -9,7 +9,7 @@ public:
 	Sprite shape;
 	Vector2f direction;
 	float mult;
-	void Move(float speed, const float &dt);
+	void Move(float speed, const float &dt, int ID);
 
 private:
 	int ownerID;

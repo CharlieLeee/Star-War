@@ -293,6 +293,7 @@ void Game::Update(float dt)
 			background.setVolume(5.f);
 			textbox.Clear();
 			ClearEnemy(enemies);
+			ClearEnemy(enemiesA);
 			ClearEnemy(enemiesB);
 			ClearBomber();
 			ClearBuff();
@@ -688,18 +689,18 @@ void Game::GenerateEnemyBullet(const float &dt, std::vector<Enemy> &enemies, boo
 	}
 }
 
-void Game::EbulletsMovement(const float & dt, std::vector<Enemy> &enemies, bool toRight)
+void Game::EbulletsMovement(const float & dt, std::vector<Enemy> &enemies, bool toRight, int ID)
 {
 	for (size_t i = ebulletIndex; i < ebullets.size(); i++)
 	{
-		ebullets[i].Move(enemy_bul_speed, dt);
+		ebullets[i].Move(enemy_bul_speed, dt, ID);
 	}
 }
 
 void Game::EbulletsUpdate(const float & dt, std::vector<Enemy> &enemies, bool toRight, int ID)
 {
 	this->GenerateEnemyBullet(dt, enemies, toRight, ID);
-	this->EbulletsMovement(dt, enemies, toRight);
+	this->EbulletsMovement(dt, enemies, toRight, ID);
 }
 
 void Game::BomberUpdate(const float &dt, Player &player)
