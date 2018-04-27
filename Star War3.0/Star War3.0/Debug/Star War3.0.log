@@ -1,8 +1,11 @@
 ﻿D:\Visual Studio\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(391,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (Star War3.0.vcxproj).  This can lead to incorrect clean and rebuild behavior.
   Game.cpp
 d:\05development\sfml repo\star-war\star war3.0\star war3.0\game.cpp(15): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
-d:\05development\sfml repo\star-war\star war3.0\star war3.0\game.cpp(632): warning C4018: '<=': signed/unsigned mismatch
-d:\05development\sfml repo\star-war\star war3.0\star war3.0\game.cpp(637): warning C4018: '<=': signed/unsigned mismatch
-d:\05development\sfml repo\star-war\star war3.0\star war3.0\game.cpp(642): warning C4018: '<=': signed/unsigned mismatch
-d:\05development\sfml repo\star-war\star war3.0\star war3.0\game.cpp(647): warning C4018: '<=': signed/unsigned mismatch
+d:\05development\sfml repo\star-war\star war3.0\star war3.0\game.cpp(640): warning C4018: '<=': signed/unsigned mismatch
+d:\05development\sfml repo\star-war\star war3.0\star war3.0\game.cpp(645): warning C4018: '<=': signed/unsigned mismatch
+d:\05development\sfml repo\star-war\star war3.0\star war3.0\game.cpp(650): warning C4018: '<=': signed/unsigned mismatch
+d:\05development\sfml repo\star-war\star war3.0\star war3.0\game.cpp(655): warning C4018: '<=': signed/unsigned mismatch
+  main.cpp
+d:\05development\sfml repo\star-war\star war3.0\star war3.0\main.cpp(7): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  Generating Code...
   Star War3.0.vcxproj -> D:\05Development\SFML Repo\Star-War\Star War3.0\Debug\Star Wars3.0.exe

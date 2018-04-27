@@ -44,9 +44,9 @@ public:
 	void BackgroundUpdate(const float &dt);
 	
 	// EBullets
-	void GenerateEnemyBullet(const float &dt, std::vector<Enemy> &enemies, bool toRight);
+	void GenerateEnemyBullet(const float &dt, std::vector<Enemy> &enemies, bool toRight, int ID);
 	void EbulletsMovement(const float &dt, std::vector<Enemy> &enemies, bool toRight);
-	void EbulletsUpdate(const float &dt, std::vector<Enemy> &enemies, bool toRight);
+	void EbulletsUpdate(const float &dt, std::vector<Enemy> &enemies, bool toRight, int ID);
 
 	// Bomber
 	void BomberUpdate(const float &dt, Player &player);
@@ -57,7 +57,7 @@ public:
 	void PlayerEnemyCollision(Player &player, std::vector<Enemy> &enemies);
 	void PlayerBossCollision(Player &player);
 	void PlayerBulletBossCollision(Player &player);
-	void PlayerEbulletsCollision(Player &player);
+	void PlayerEbulletsCollision(Player &player, int EnemyID);
 	void PlayerPlayerCollision(Player &playerA, Player &playerB, float dt);
 	void PBulletPlayerCollision(Player &playerMain, Player &oppPlayer);
 
@@ -65,11 +65,11 @@ public:
 
 	// Enemy
 	void ResetEnemy();
-	void EnemyUpdate(const float &dt, float &spawnCnt, std::vector<Enemy> &enemies, bool toRight);
+	void EnemyUpdate(const float &dt, float &spawnCnt, std::vector<Enemy> &enemies, bool toRight, int ID);
 
 	// Player
 	void ResetPlayer(Player &player);
-	void PlayerUpdate(const float & dt, Player &player, std::vector<Enemy> &enemies, bool isTwo, Keyboard::Key Shooting, Player *oppPlayer = nullptr);
+	void PlayerUpdate(const float & dt, Player &player, std::vector<Enemy> &enemies, int EnemyID, bool isTwo, Keyboard::Key Shooting, Player *oppPlayer = nullptr);
 	void PlayerStateUpdate(Player &player);
 	void PlayerScoreUpdate(Player &player);
 
@@ -104,7 +104,7 @@ public:
 	void DrawBoss(RenderWindow *window, std::vector<Boss> &boss);
 
 
-	void TextboxUpdate();
+	void TextboxUpdate(const float &dt);
 
 	// Game
 	void Run();
@@ -264,10 +264,17 @@ private:
 
 	// Textbox
 	Textbox textbox;
+	int Timeline;
+	float DialogCnt;
+	bool isStory;
 
 	// Character texutres
 	Texture son;
 	Texture robot;
 	Texture colonel;
+	Texture Han;
+	Texture Black;
+	Texture General;
+	Texture Hunter;
 };
 

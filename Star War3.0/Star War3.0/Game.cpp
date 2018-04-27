@@ -1,6 +1,6 @@
 #include "Game.h"
 
-
+enum EnemyID { DEFAULT = 0, playerAEnemy, playerBEnemy };
 
 Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture *enemyText,
 	Texture *logoText, float shootLapse, Texture *backgroundMenu, Texture *explosionTex,
@@ -26,7 +26,11 @@ Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture
 	isLOGO(true),
 	spawnCnt(0.f),
 	spawnCntA(0.f),
-	spawnCntB(0.f)
+	spawnCntB(0.f),
+	Timeline(0),
+	DialogCnt(0.f),
+	isStory(false)
+
 {
 	// Init Buff
 	this->addBullet = addBullet;
@@ -165,6 +169,10 @@ Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture
 	this->son.loadFromFile("Textures/son.png");
 	this->robot.loadFromFile("Textures/Robot.png");
 	this->colonel.loadFromFile("Textures/colonel.png");
+	this->Black.loadFromFile("Textures/Black.png");
+	this->General.loadFromFile("Textures/General.png");
+	this->Hunter.loadFromFile("textures/Hunter.png");
+	this->Han.loadFromFile("Textures/Han.png");
 }
 
 
@@ -313,16 +321,16 @@ void Game::Update(float dt)
 			BossUpdate(dt, player);
 
 			// Update Textbox
-			TextboxUpdate();
+			TextboxUpdate(dt);
 
 			// Update Buffs
 			BuffUpdate(dt, player);
 
 			// Update player
-			PlayerUpdate(dt, player, enemies, false, Keyboard::K);
+			PlayerUpdate(dt, player, enemies, EnemyID::DEFAULT, false, Keyboard::K);
 
 			// Update enemies movement & hp
-			EnemyUpdate(dt, this->spawnCnt, enemies, true);
+			EnemyUpdate(dt, this->spawnCnt, enemies, true, EnemyID::DEFAULT);
 
 			// Bomber update
 			BomberUpdate(dt, player);
@@ -343,20 +351,20 @@ void Game::Update(float dt)
 			PlayerTimerUpdate(dt, playerB);
 
 			// Update Textbox
-			TextboxUpdate();
+			TextboxUpdate(dt);
 
 			// Update Buffs
 			BuffUpdate(dt, playerA);
 			BuffUpdate(dt, playerB);
 
 			// Update player
-			PlayerUpdate(dt, playerA, enemiesA, true, Keyboard::Space, &playerB);
-			PlayerUpdate(dt, playerB, enemiesB, true, Keyboard::RShift, &playerA);
+			PlayerUpdate(dt, playerA, enemiesA, EnemyID::playerAEnemy, true, Keyboard::Space, &playerB);
+			PlayerUpdate(dt, playerB, enemiesB, EnemyID::playerBEnemy, true, Keyboard::RShift, &playerA);
 			PlayerPlayerCollision(playerA, playerB, dt);
 
 			// Update enemies movement & hp
-			EnemyUpdate(dt, spawnCntA, enemiesA, true);
-			EnemyUpdate(dt, spawnCntB, enemiesB, false);
+			EnemyUpdate(dt, spawnCntA, enemiesA, true, EnemyID::playerAEnemy);
+			EnemyUpdate(dt, spawnCntB, enemiesB, false, EnemyID::playerBEnemy);
 
 			// Explosion Update
 			ExplosionUpdate(enemySpeed / 2, dt, explosion);
@@ -549,7 +557,7 @@ void Game::BossTimerUpdate(const float & dt)
 
 void Game::GenerateBoss()
 {
-	if (player.score % 100 == 0 && player.score != 0 && !generateBoss)
+	if (player.score % 200 == 0 && player.score != 0 && !generateBoss)
 	{
 		boss.push_back(Boss(6.f, &bossTex, 20, this->window->getSize()));
 		this->generateBoss = true;
@@ -655,8 +663,13 @@ void Game::BackgroundUpdate(const float & dt)
 	moving.UpdateMovingBack(this->window, dt, Vector2f(backgroundSpeed.x - abs(player.currentV.x) / 4, 0.f));
 }
 
-void Game::GenerateEnemyBullet(const float &dt, std::vector<Enemy> &enemies, bool toRight)
+void Game::GenerateEnemyBullet(const float &dt, std::vector<Enemy> &enemies, bool toRight, int ID)
 {
+	int orient;
+	if (toRight)
+		orient = 1;
+	else
+		orient = -1;
 	// Enemy bullets generate
 	for (size_t i = enemyIndex; i < enemies.size(); i++)
 	{
@@ -665,7 +678,7 @@ void Game::GenerateEnemyBullet(const float &dt, std::vector<Enemy> &enemies, boo
 			int temp = rand() % 10 + 1;
 			if (temp == 1)
 			{
-				ebullets.push_back(eBullets(&ebulletTex, enemies[i].shape.getPosition() + offset2, eRegularDir));
+				ebullets.push_back(eBullets(&ebulletTex, enemies[i].shape.getPosition() + offset2, Vector2f(eRegularDir.x * orient, eRegularDir.y), ID));
 				// Add to ebullets number
 				this->ebulletCnt++;
 				enemies[i].bulletTimer -= ebulletCntMax;
@@ -683,9 +696,9 @@ void Game::EbulletsMovement(const float & dt, std::vector<Enemy> &enemies, bool 
 	}
 }
 
-void Game::EbulletsUpdate(const float & dt, std::vector<Enemy> &enemies, bool toRight)
+void Game::EbulletsUpdate(const float & dt, std::vector<Enemy> &enemies, bool toRight, int ID)
 {
-	this->GenerateEnemyBullet(dt, enemies, toRight);
+	this->GenerateEnemyBullet(dt, enemies, toRight, ID);
 	this->EbulletsMovement(dt, enemies, toRight);
 }
 
@@ -885,6 +898,10 @@ void Game::PlayerBulletBossCollision(Player & player)
 				boss.erase(boss.begin() + j);
 				endSound.play();
 				generateBoss = false;
+				// Update story
+				//story state
+				Timeline += 1;
+				isStory = true;
 			}
 		}
 		if (bulletErased)
@@ -894,13 +911,13 @@ void Game::PlayerBulletBossCollision(Player & player)
 	}
 }
 
-void Game::PlayerEbulletsCollision(Player & player)
+void Game::PlayerEbulletsCollision(Player & player, int enemyID)
 {
 	for (size_t i = ebulletIndex; i < ebullets.size(); i++)
 	{
 		// Player collison
 
-		if (ebullets[i].shape.getGlobalBounds().intersects(player.shape.getGlobalBounds()))
+		if (ebullets[i].shape.getGlobalBounds().intersects(player.shape.getGlobalBounds()) && ebullets[i].getID() == enemyID)
 		{
 			player.HP--;
 			eshotSound.play();
@@ -1178,7 +1195,8 @@ void Game::ResetEnemy()
 	this->spawnLapse = 2.1f;
 }
 
-void Game::EnemyUpdate(const float & dt, float &spawnCnt, std::vector<Enemy> &enemies, bool toRight)
+// enemies with different IDs all get updated thats why its 2 times faster
+void Game::EnemyUpdate(const float & dt, float &spawnCnt, std::vector<Enemy> &enemies, bool toRight, int ID)
 {
 	// Timer
 	EnemyTimerUpdate(spawnCnt, dt, enemies, toRight);
@@ -1189,7 +1207,7 @@ void Game::EnemyUpdate(const float & dt, float &spawnCnt, std::vector<Enemy> &en
 	}
 
 	// Update ebullets
-	EbulletsUpdate(dt, enemies, toRight);
+	EbulletsUpdate(dt, enemies, toRight, ID);
 }
 
 void Game::ResetPlayer(Player & player)
@@ -1197,7 +1215,7 @@ void Game::ResetPlayer(Player & player)
 	player.Reset();
 }
 
-void Game::PlayerUpdate(const float & dt, Player &player, std::vector<Enemy> &enemies, bool isTwo, Keyboard::Key Shooting, Player *oppPlayer)
+void Game::PlayerUpdate(const float & dt, Player &player, std::vector<Enemy> &enemies, int enemyID, bool isTwo, Keyboard::Key Shooting, Player *oppPlayer)
 {
 	// Player Update position
 	player.Update(*window, dt);
@@ -1235,7 +1253,7 @@ void Game::PlayerUpdate(const float & dt, Player &player, std::vector<Enemy> &en
 	// Player & Enemies Collison
 	PlayerEnemyCollision(player, enemies);
 	//Player & Ebullets collision
-	PlayerEbulletsCollision(player);
+	PlayerEbulletsCollision(player, enemyID);
 
 	if (oppPlayer != nullptr)
 	{
@@ -1300,25 +1318,56 @@ void Game::TwoPlayerScoreUpdate(Player &playerA, Player &playerB)
 	}
 }
 
-void Game::TextboxUpdate()
+void Game::TextboxUpdate(const float &dt)
 {
-	if (player.score >= 100 && !isHundred)
+	if (player.score >= 200 && !isHundred)
 	{
 		this->textbox.Add("You've reached " + std::to_string(player.score) + "pts, watch out for the BOSS!!", true, &robot);
 		this->isHundred = true;
 	}
 
-	if (havePickedHP)
+	if (havePickedHP && !isStory)
 	{
 		this->textbox.Add("You've picked one HP Buff: health +1.     Your HP: " + std::to_string(player.HP), true, &colonel);
 		this->havePickedHP = false;
 	}
 
-	if (pickedBulletBuff)
+	if (pickedBulletBuff && !isStory)
 	{
 		this->textbox.Add("You've picked one Bullet Buff: Your shooting mode: strafet", true, &colonel);
 		this->pickedBulletBuff = false;
 	}
+
+	switch (Timeline)
+	{
+	case 1:this->textbox.Add("How dare you to let him escape! \nYou fools!", true, &Black);
+		Timeline++; break;
+	case 3:this->textbox.Add("He must hide in the asteroid belts!\n let me finish him!", true, &Hunter);
+		Timeline++; break;
+	case 5:this->textbox.Add("He is yours now.", true, &Black);
+		Timeline++; isStory = false; break;
+	case 7:this->textbox.Add("Yuuuuu!  It's over!\n now let the rebels know about me!", true, &son);
+		Timeline++; break;
+	case 9:this->textbox.Add("Hi general\n I always wanna be a rebel pilot\n please let me fight back with X-wing squadron!", true, &son);
+		Timeline++; break;
+	case 11:this->textbox.Add("You request is permitted\n  But you need back up \ncome and meet Luke and Han Solo.", true, &General);
+		Timeline++; break;
+	case 13:this->textbox.Add("Here is the plan, pilot\n You will cover us back when we enter the DeathStar to rescue the princess\nthen you will hide and wait outside. ", true, &Han);
+		Timeline++; break;
+	case 15:this->textbox.Add(" We need you draw the imperial fleets attention when we come out\n u understand? ", true, &Han);
+		Timeline++; break;
+	case 17:this->textbox.Add("Aye captain, at your command!", true, &son);
+		Timeline++; isStory = false; break;
+
+	}
+
+	if (DialogCnt <= 5.f&&isStory)
+	{
+		DialogCnt += dt;
+	}
+	if (DialogCnt > 5.f) {
+		DialogCnt = 0.f;
+		Timeline++;
+	}
+
 }
-
-

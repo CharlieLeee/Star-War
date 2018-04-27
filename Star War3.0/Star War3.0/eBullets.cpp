@@ -2,7 +2,8 @@
 
 
 
-eBullets::eBullets(Texture *texture, Vector2f pos, Vector2f direction)
+eBullets::eBullets(Texture *texture, Vector2f pos, Vector2f direction, int ownerID)
+: ownerID(ownerID)
 {
 	this->shape.setTexture(*texture);
 
@@ -24,4 +25,9 @@ void eBullets::Move(float speed, const float & dt)
 	{
 		this->shape.setRotation(180.f + atan2(this->direction.y, this->direction.x) * 180 / 3.14159265359);
 	}
+}
+
+int eBullets::getID() const
+{
+	return this->ownerID;
 }

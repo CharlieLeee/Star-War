@@ -28,7 +28,7 @@ Enemy::Enemy(Texture *texture, Vector2u windowSize, float maxV, bool toRight)
 	else 
 		this->shape.setPosition(0.f, rand() % this->range);
 		
-	this->ehpBack.setSize(Vector2f(this->HPMax * 20.f, 5.f));
+	this->ehpBack.setSize(Vector2f(this->orient * this->HPMax * 20.f, 5.f));
 	this->ehpBack.setFillColor(Color(159, 159, 159, 120));
 	this->ehp.setFillColor(Color(32, 164, 212, 140));
 	
@@ -40,7 +40,7 @@ void Enemy::UpdateHP()
 {
 	this->ehpBack.setPosition(this->shape.getPosition().x, this->shape.getPosition().y - ehp.getGlobalBounds().height);
 
-	this->ehp.setSize(Vector2f(this->HP * 20.f, 5.f));
+	this->ehp.setSize(Vector2f(this->orient * this->HP * 20.f, 5.f));
 
 	this->ehp.setPosition(this->shape.getPosition().x, this->shape.getPosition().y - ehp.getGlobalBounds().height);
 }
