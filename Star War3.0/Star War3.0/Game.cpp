@@ -149,11 +149,11 @@ Game::Game(RenderWindow *window, Texture *playerTex, Texture *bulletTex, Texture
 	// Endscore text
 	this->endScoreText.setFont(font);
 	this->endScoreText.setCharacterSize(30);
-	this->endScoreText.setFillColor(Color::Red);
+	this->endScoreText.setFillColor(Color(64, 224, 208, 250));
 
 	this->twoPText.setFont(font);
 	this->twoPText.setCharacterSize(30);
-	this->twoPText.setFillColor(Color::Red);
+	this->twoPText.setFillColor(Color(255, 106, 106, 250));
 
 	// Background
 	this->backgroundSpeed = Vector2f(-3.f, 0.f);
@@ -359,8 +359,8 @@ void Game::Update(float dt)
 			BuffUpdate(dt, playerB);
 
 			// Update player
-			PlayerUpdate(dt, playerA, enemiesA, EnemyID::playerAEnemy, true, Keyboard::Space, &playerB);
-			PlayerUpdate(dt, playerB, enemiesB, EnemyID::playerBEnemy, true, Keyboard::RShift, &playerA);
+			PlayerUpdate(dt, playerA, enemiesA, EnemyID::playerAEnemy, true, Keyboard::K, &playerB);
+			PlayerUpdate(dt, playerB, enemiesB, EnemyID::playerBEnemy, true, Keyboard::Space, &playerA);
 			PlayerPlayerCollision(playerA, playerB, dt);
 
 			// Update enemies movement & hp
@@ -368,7 +368,7 @@ void Game::Update(float dt)
 			EnemyUpdate(dt, spawnCntB, enemiesB, false, EnemyID::playerBEnemy);
 
 			// Explosion Update
-			ExplosionUpdate(enemySpeed / 2, dt, explosion);
+			ExplosionUpdate(enemySpeed / 2, dt, explosion, false);
 
 			TwoPlayerScoreUpdate(playerA, playerB);
 		}
@@ -472,8 +472,8 @@ void Game::Draw(float dt)
 			// Draw Textbox
 			textbox.Render(*window);
 
-			// Score
-			window->draw(score);
+			//// Score
+			//window->draw(score);
 		}
 
 		else if (gameIsOver && !isTwoPlayer)
@@ -950,11 +950,12 @@ void Game::PlayerPlayerCollision(Player & playerA, Player & playerB, float dt)
 
 }
 
-void Game::ExplosionUpdate(float speed, const float & dt, std::vector<Animation> &explosion)
+void Game::ExplosionUpdate(float speed, const float & dt, std::vector<Animation> &explosion, bool isMoving)
 {
 	for (size_t i = 0; i < explosion.size(); i++)
 	{
-		explosion[i].shape.move(-speed * dt * mult, 0.f);
+		if (isMoving)
+			explosion[i].shape.move(-speed * dt * mult, 0.f);
 		explosion[i].UpdateAll(dt);
 		explosion[i].shape.setTextureRect(explosion[i].uvRect);
 	}
@@ -1277,7 +1278,7 @@ void Game::PlayerStateUpdate(Player & player)
 			window->getSize().y / 2.f - endScoreText.getGlobalBounds().height / 2));
 
 		this->endScoreText.setString("    GAME OVER!\n      SCORE: " + std::to_string(player.score) +
-			"\nPress space to restart or ESC to exit");
+			"\n\n\nPress space to go back to menu\n    or Enter to restart");
 
 		ClearEnemy(enemies);
 		gameIsOver = true;
@@ -1310,13 +1311,18 @@ void Game::TwoPlayerScoreUpdate(Player &playerA, Player &playerB)
 	if (playerA.HP <= 0)
 	{
 		gameIsOver = true;
-		this->twoPText.setString("Right Player WON!!");
+		this->twoPText.setString("Right Player WON!!\n\n\nPress space to go back to menu\n    or Enter to restart");
 	}
 	else if (playerB.HP <= 0)
 	{
 		gameIsOver = true;
-		this->twoPText.setString("Left Player WON!!");
+		this->twoPText.setString("Left Player WON!!\n\n\nPress space to go back to menu\n    or Enter to restart");
 	}
+
+	this->twoPText.setPosition(
+		this->window->getSize().x / 2 - this->twoPText.getGlobalBounds().width / 2,
+		this->window->getSize().y / 2 - this->twoPText.getGlobalBounds().height / 2
+	);
 }
 
 void Game::TextboxUpdate(const float &dt)

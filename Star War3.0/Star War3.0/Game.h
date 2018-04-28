@@ -61,7 +61,7 @@ public:
 	void PlayerPlayerCollision(Player &playerA, Player &playerB, float dt);
 	void PBulletPlayerCollision(Player &playerMain, Player &oppPlayer);
 
-	void ExplosionUpdate(float speed, const float & dt, std::vector<Animation> &explosion);
+	void ExplosionUpdate(float speed, const float & dt, std::vector<Animation> &explosion, bool isMoving = true);
 
 	// Enemy
 	void ResetEnemy();

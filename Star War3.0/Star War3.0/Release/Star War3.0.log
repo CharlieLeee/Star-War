@@ -1,10 +1,14 @@
 ﻿D:\Visual Studio\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(391,5): warning MSB8028: The intermediate directory (Release\) contains files shared from another project (Star War3.0.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  main.cpp
-d:\05development\sfml repo\star-war\star war3.0\star war3.0\main.cpp(7): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  Game.cpp
+d:\05development\sfml repo\star-war\star war3.0\star war3.0\game.cpp(15): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
+d:\05development\sfml repo\star-war\star war3.0\star war3.0\game.cpp(641): warning C4018: '<=': signed/unsigned mismatch
+d:\05development\sfml repo\star-war\star war3.0\star war3.0\game.cpp(646): warning C4018: '<=': signed/unsigned mismatch
+d:\05development\sfml repo\star-war\star war3.0\star war3.0\game.cpp(651): warning C4018: '<=': signed/unsigned mismatch
+d:\05development\sfml repo\star-war\star war3.0\star war3.0\game.cpp(656): warning C4018: '<=': signed/unsigned mismatch
      Creating library D:\05Development\SFML Repo\Star-War\Star War3.0\Release\Star Wars3.0.lib and object D:\05Development\SFML Repo\Star-War\Star War3.0\Release\Star Wars3.0.exp
   Generating code
-  1 of 929 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
+  2 of 930 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    5 functions had inline decision re-evaluated but remain unchanged
+    1 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   Star War3.0.vcxproj -> D:\05Development\SFML Repo\Star-War\Star War3.0\Release\Star Wars3.0.exe
