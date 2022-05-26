@@ -3,5 +3,5 @@ A Game made with C++ and SFML
 
 ## Project Info Page
 
-link: https://ckli.xyz/project/star-war-game/
+link: https://charlieleee.github.io/project/star-war-game/
 
