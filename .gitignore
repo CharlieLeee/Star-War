@@ -32,3 +32,4 @@
 *.app
 
 *.html
+build/

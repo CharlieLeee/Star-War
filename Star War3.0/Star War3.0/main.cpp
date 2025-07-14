@@ -6,7 +6,7 @@ int main()
 	// Generate random seed
 	srand(time(NULL));
 	// Init window
-	RenderWindow window(VideoMode(1920, 1080), "Star War v3.0", Style::Fullscreen);
+	RenderWindow window(VideoMode(1280, 720), "Star War v3.0", Style::Default);
 	
 	sf::Image icon;
 	icon.loadFromFile("Textures/icon.png");

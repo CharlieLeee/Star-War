@@ -49,7 +49,7 @@ void Bomber::Move(float speed, const float & deltaTime, Vector2f playerPos, Rend
 		{
 			this->posi = (this->shape.getPosition());
 			this->aimdir = (playerCurPos - this->posi);
-			Vector2f aimdirnorm = this->aimdir / sqrt(pow(this->aimdir.x, 2) + pow(this->aimdir.y, 2));
+			Vector2f aimdirnorm = this->aimdir / static_cast<float>(sqrt(pow(this->aimdir.x, 2) + pow(this->aimdir.y, 2)));
 			if (!(sqrt(pow(playerCurPos.x - this->shape.getPosition().x, 2) + pow(playerCurPos.y - this->shape.getPosition().y, 2)) < speed))
 				this->shape.move(1.8f * aimdirnorm * speed * deltaTime * mult);
 		}
